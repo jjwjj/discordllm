@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+#
+# my files
+credentials.py
+app_slack.py
+hydralogs.txt
+app.db
 
 # C extensions
 *.so
