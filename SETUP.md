@@ -14,6 +14,8 @@ If you are new to AWS, here's a quick overview:
 Setting up a new one is pretty easy.
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/21032d19-f231-4916-97f7-64cb6fc9700a)
 
+Create or Choose an SSH Keypair then save it locally somewhere safe. You will need this later if you want to connect using tools other than AWS' default terminal.
+![image](https://github.com/jjwjj/discordllm/assets/9681066/03d40582-da67-420a-babc-8261ab35da40)
 
 Select a plain vanilla Amazon Linux Instance type:
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/8e8490cc-6114-455c-9502-517085cecc1f)
