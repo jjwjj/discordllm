@@ -23,7 +23,8 @@ With a little more work, other LLMs such as Google's AI can be added. When OpenA
 
 _____________________
 
-**Technical Execution:** To get this going, it requires a discord server. It will all be documented in a separate setup/how-to file. For the time being, here are the current pieces that I am using:
+**Technical Execution:** For starters, this project assumes at least some familiarity with Python, Linux, and Discord.<br/><br/>
+To get this going, it requires a discord server. It will all be documented in a separate setup/how-to file. For the time being, here are the current pieces that I am using:
 - A discord server
 - An AWS Linux instance (1GB 2vCPUs and 40GB storage)
   - Python 3.9
