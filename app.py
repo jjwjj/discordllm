@@ -574,6 +574,7 @@ async def on_message(message):
     elif usrtext.startswith('!'): # check for commands
         if usrtext.startswith('!test'):
             await message.channel.send('Test message received')
+            return
 
         elif usrtext.startswith('!lastboot'):
             await typingSend(message,f'server was last rebooted {lastboot}')
