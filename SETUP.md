@@ -87,7 +87,9 @@ Step 4: Copy and Use the Invite Link
 After selecting the appropriate scopes and permissions, an invite URL will be generated at the bottom of the "Scopes" section.
 Copy this URL.
 Paste the URL into your web browser, and you will be directed to a Discord page to add your bot to a server.
-Select the server to which you want to add your bot and confirm the action.
+Select the server to which you want to add your bot and confirm the action.<br/>
+![image](https://github.com/jjwjj/discordllm/assets/9681066/beb021cd-14b8-4e61-91c1-131a1ff72af2)
+
 
 Step 5: Add the Bot to Your Server
 After confirming the permissions, click on the "Authorize" button.
