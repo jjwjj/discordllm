@@ -15,7 +15,7 @@ _____________________
 **Technical Execution:** To get this going, it requires a discord server. It will all be documented in a separate setup/how-to file. For the time being, here are the current pieces that I am using:
 - A discord server
 - An AWS Linux instance (1GB 2vCPUs and 40GB storage)
--   Python 3.9
--   Python's virtual environments
--   Linux Screen
--   
+  - Python 3.9
+  - Python's virtual environments
+  - Linux Screen
+  
