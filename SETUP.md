@@ -18,3 +18,8 @@ Select a plain vanilla Amazon Linux Instance type:
 
 I have been using the 1GB instance which is good for multiple development projects. If the plan is to just run a few bots, the 512MB is plenty.
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/ebbb3b53-10c8-487f-866a-1f46f2354838)
+
+
+#2.
+Bot Setup -- Get a new Token
+![image](https://github.com/jjwjj/discordllm/assets/9681066/6f09a226-29ec-4a8c-b149-213e10c63cfb)
