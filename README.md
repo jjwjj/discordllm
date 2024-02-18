@@ -3,7 +3,7 @@
 app.py            == the main controler, contains the user input/output logic
 appchat.py        == talks to the LLMs
 appdb.py          == sqlite database connectivity
-credentials.py    == API keys and Bot Tokens
+credentials.py    == API keys and Bot Tokens (I don't like env variables)
 ddgfn.py          == duck duck go functionality
 instructions.yaml == the different "personas". essentially fine-tuned instructions for the LLM to follow
 runbot.sh         == bash script to run and restart the bot if it crashes
