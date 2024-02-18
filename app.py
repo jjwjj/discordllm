@@ -377,8 +377,9 @@ async def on_message(message):
             usrtext = tmp
             textattach = ""
 
-            # print()
-            # print('new usrtext=',usrtext)
+            print()
+            print('new usrtext=',usrtext)
+            print('/\\'*50)
 
     elif message.attachments or message.embeds:
         isReject = True
