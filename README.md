@@ -1,3 +1,12 @@
+**Here is a quick rundown of the files:**
+app.py -- the main controler, contains the user input/output logic
+appchat.py -- talks to the LLMs
+appdb.py -- sqlite database connectivity
+credentials.py -- API keys and Bot Tokens
+ddgfn.py -- duck duck go functionality
+instructions.yaml -- the different "personas". essentially fine-tuned instructions for the LLM to follow
+runbot.sh -- bash script to run and restart the bot if it crashes
+
 This is an integration of LLM APIs presented through Discord.
 
 **Lets start with an overview:** I grew up playing text based adventures. Zork was an early entry into what feels like a conversational interaction. Fast forward many years, and we are experiencing the infantcy of Large Language Models. With all of the rapid advancements, I wanted a tool that can test different LLMs and incorporate new models as they become available. ChatGPT is great, but can also feel frustrating at times. It is too easy to make ChatGPT lose focus, and some of the UI could be improved. Instead of trying to create a new front end, it feels much more sensible to utilize a best-in-breed approach, and incorporate the functionality into a UI/UX that has already been matured. Currently Slack, Microsoft Teams, and Discord all have large user bases with established UI/UX norms. For this project, Discord's Python library was the easiest one for me to use and had most of the functionality that I wanted.
