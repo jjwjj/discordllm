@@ -30,16 +30,17 @@ Give it a name so you can find it again later. Then click Create Instance:
 
 
 #2.
-
-
-
-Set Up a Discord Bot:
+**Set Up a Discord Bot:**
 
 Create a new bot on the Discord Developer Portal. https://discord.com/developers/applications
 Get the bot token, which you'll use to authenticate your bot with Discord's servers.
+
+![image](https://github.com/jjwjj/discordllm/assets/9681066/6f09a226-29ec-4a8c-b149-213e10c63cfb)
+
+<br/>
 Create a Python Script for the Bot:
 
-Deploy the Bot:
+**Deploy the Bot:**
 
 Host your bot on a server or a cloud platform to keep it running.
 Ensure your hosting environment has all necessary dependencies installed.
@@ -54,21 +55,22 @@ Security and Rate Limits:
 
 Be mindful of the security implications. Do not allow the bot to execute arbitrary code or reveal sensitive information.
 Be aware of the rate limits imposed by both Discord and OpenAI to avoid service disruptions.
-
-_ 
-Step 1: Access the Discord Developer Portal
+ 
+**Step 1:** Access the Discord Developer Portal
 Navigate to the Discord Developer Portal.
 Log in with your Discord account.
 Click on the application that corresponds to your bot.
 
-Step 2: Configure Bot Permissions
+**Step 2:** Configure Bot Permissions
 In the application dashboard, select the "Bot" tab on the left-hand side.
 Under the "Privileged Gateway Intents" section, ensure that the necessary intents are enabled. For a basic chat bot, you might need the following intents:
 Presence Intent: If your bot needs to track user presence updates.
 Server Members Intent: If your bot needs information about server members.
 Message Content Intent: For reading message content in guilds.
+![image](https://github.com/jjwjj/discordllm/assets/9681066/28e53a78-aef7-43b3-97da-05f267378811)
 
-Step 3: Generate the Bot Invite Link
+
+**Step 3:** Generate the Bot Invite Link
 In the application dashboard, select the "OAuth2" tab on the left-hand side.
 Under "Scopes," select bot. This allows your application to connect to Discord as a bot.
 Additional options will appear below. Under “Bot Permissions,” select the permissions your bot requires. For basic interactions, you might need:
@@ -106,5 +108,5 @@ Save Changes:
 
 
 Bot Setup -- Get a new Token
-![image](https://github.com/jjwjj/discordllm/assets/9681066/6f09a226-29ec-4a8c-b149-213e10c63cfb)
+
 
