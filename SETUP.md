@@ -27,7 +27,7 @@ Create your Linux Server Instance:
 Give it a name so you can find it again later. Then click Create Instance:
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/f6b01a9a-e7d6-494b-b4b0-402ca7ba0d0c)
 
-
+____________________________
 
 #2.
 **Set Up a Discord Bot:**
@@ -62,24 +62,26 @@ Log in with your Discord account.
 Click on the application that corresponds to your bot.
 
 **Step 2:** Configure Bot Permissions
-In the application dashboard, select the "Bot" tab on the left-hand side.
-Under the "Privileged Gateway Intents" section, ensure that the necessary intents are enabled. For a basic chat bot, you might need the following intents:
-Presence Intent: If your bot needs to track user presence updates.
-Server Members Intent: If your bot needs information about server members.
-Message Content Intent: For reading message content in guilds.
+In the application dashboard, select the "Bot" tab on the left-hand side.<br/>
+Under the "Privileged Gateway Intents" section, ensure that the necessary intents are enabled. For a basic chat bot, you might need the following intents:<br/>
+Presence Intent: If your bot needs to track user presence updates.<br/>
+Server Members Intent: If your bot needs information about server members.<br/>
+Message Content Intent: For reading message content in guilds.<br/>
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/28e53a78-aef7-43b3-97da-05f267378811)
 
 
 **Step 3:** Generate the Bot Invite Link
-In the application dashboard, select the "OAuth2" tab on the left-hand side.
-Under "Scopes," select bot. This allows your application to connect to Discord as a bot.
-Additional options will appear below. Under “Bot Permissions,” select the permissions your bot requires. For basic interactions, you might need:
-Read Messages/View Channels
-Send Messages
-Embed Links (if your bot sends embedded links)
-Read Message History (if needed)
-Add Reactions (if needed)
-(Any other permissions your specific bot requires)
+In the application dashboard, select the "OAuth2" tab on the left-hand side.<br/>
+Under "Scopes," select bot. This allows your application to connect to Discord as a bot.<br/>
+Additional options will appear below. Under “Bot Permissions,” select the permissions your bot requires. For basic interactions, you might need:<br/>
+Read Messages/View Channels<br/>
+Send Messages<br/>
+Embed Links (if your bot sends embedded links)<br/>
+Read Message History (if needed)<br/>
+Add Reactions (if needed)<br/>
+(Any other permissions your specific bot requires)<br/>
+![image](https://github.com/jjwjj/discordllm/assets/9681066/1828147e-ae4f-415d-b9d0-98f2b3ff64e3)
+
 
 Step 4: Copy and Use the Invite Link
 After selecting the appropriate scopes and permissions, an invite URL will be generated at the bottom of the "Scopes" section.
