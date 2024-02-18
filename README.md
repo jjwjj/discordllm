@@ -18,4 +18,5 @@ _____________________
   - Python 3.9
   - Python's virtual environments
   - Linux Screen
+- OpenAI's API
   
