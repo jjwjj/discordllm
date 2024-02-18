@@ -110,7 +110,19 @@ Users should ensure the option "Allow direct messages from server members" is en
 If this setting is disabled, users should toggle it on to allow DMs from server members.
 Save Changes:
 
+____________
 
-Bot Setup -- Get a new Token
+#3 OpenAI
+You will need an OpenAI key. <br/>
+Navigate to https://platform.openai.com<br/>
+![image](https://github.com/jjwjj/discordllm/assets/9681066/b063988a-3a63-4b94-b9b3-11e1502ec047)
+
+Either create a new API Key, or copy an existing key.<br/>
+![image](https://github.com/jjwjj/discordllm/assets/9681066/7c74ee1f-6928-4be2-8421-0dc66dc3482c)
+
+You will want to save this API Key in a safe place.
+
+
+
 
 
