@@ -15,3 +15,6 @@ Setting up a new one is pretty easy.
 
 Select a plain vanilla Amazon Linux Instance type:
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/8e8490cc-6114-455c-9502-517085cecc1f)
+
+I have been using the 1GB instance which is good for multiple development projects. If the plan is to just run a few bots, the 512MB is plenty.
+![image](https://github.com/jjwjj/discordllm/assets/9681066/ebbb3b53-10c8-487f-866a-1f46f2354838)
