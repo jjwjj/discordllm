@@ -20,4 +20,4 @@ _____________________
   - Linux Screen
 - OpenAI's API
   
-![67200a76-63c3-4b98-8e3f-80164e7a8f9e](https://github.com/jjwjj/discordllm/assets/9681066/e23dee11-4e02-495a-8159-94253f272a50)
+
