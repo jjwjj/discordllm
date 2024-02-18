@@ -530,6 +530,7 @@ async def on_message(message):
                         ddgresult = await getPromptResponse(executor, ddgfn.ddgText, searchtext)
                 
                 # ddgresult = ddgfn.ddgText(searchtext)
+                print(f'search results:\n{ddgresult}')
 
             elif usrtext.startswith(artcommands): # 🎨
                 # print(f'found an art command {usrcmd}')
@@ -556,6 +557,7 @@ async def on_message(message):
             else:
                 # await typingSend(message,f'{usrcmd} {tmpusrtext}')
                 prompt = tmpusrtext
+                
 
 
 
