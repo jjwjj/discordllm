@@ -1,4 +1,5 @@
 **Here is a quick rundown of the files:**
+```
 app.py -- the main controler, contains the user input/output logic
 appchat.py -- talks to the LLMs
 appdb.py -- sqlite database connectivity
@@ -6,6 +7,7 @@ credentials.py -- API keys and Bot Tokens
 ddgfn.py -- duck duck go functionality
 instructions.yaml -- the different "personas". essentially fine-tuned instructions for the LLM to follow
 runbot.sh -- bash script to run and restart the bot if it crashes
+```
 
 This is an integration of LLM APIs presented through Discord.
 
