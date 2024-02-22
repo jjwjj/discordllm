@@ -627,7 +627,7 @@ async def on_message(message):
                 tmp = usrtext[len('!topic'):].strip()
 
                 if len(tmp) < 1:
-                    msg = f'Current topic is:\n```\n{str(message.channel.topic)}\n```'
+                    msg = f'Current topic is:\n```\n!topic {str(message.channel.topic)}\n```'
                 else:
                     # Edit the channel's topic
                     await message.channel.edit(topic=tmp)
