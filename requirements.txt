@@ -1,0 +1,10 @@
+discord
+PyYAML
+openai
+tiktoken
+numpy
+beautifulsoup4
+pytz
+duckduckgo-search
+
+
