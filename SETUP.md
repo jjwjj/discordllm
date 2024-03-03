@@ -112,7 +112,8 @@ Save Changes:
 
 ____________
 
-#3 OpenAI
+#3 
+**OpenAI:**
 You will need an OpenAI key. <br/>
 Navigate to https://platform.openai.com<br/>
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/b063988a-3a63-4b94-b9b3-11e1502ec047)
@@ -124,7 +125,8 @@ You will want to save this API Key in a safe place.
 
 ____________
 
-#4 Accessing the Remote Linux Command line
+#4 
+**Accessing the Remote Linux Command line:**
 Now that we have all of our keys, we need to access the instance and install the relevant software on the instance. I am running from a Windows machine, and have
 been partial to [bitvise](https://www.bitvise.com/ssh-client) as an SSH client. It does not matter which SSH client you use, in fact you can log into the terminal directly from AWS.
 
@@ -139,7 +141,8 @@ Here are some helpful links to SSH tools.<br/>
 
 ____________
 
-#5 Installing the latest version of Python
+#5 
+**Installing the latest version of Python:**
 As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
 emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8.
 
