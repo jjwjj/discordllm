@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/bitnami/py/discord/src/coder
+# cd /home/bitnami/py/discord/src/coder
 
 echo "************ Press CTRL+C to exit ************"
 

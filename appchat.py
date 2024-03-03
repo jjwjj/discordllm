@@ -435,6 +435,8 @@ def onechat(uid,intxt,persona="default",model=credentials.aimodel):
     sysreq = chatty[persona]["sys"]
     usrtxt = chatty[persona]["usr"]
     endtxt = chatty[persona]["suffix"]
+    chnobj = chatty[persona].get("chain")
+    print('chnobj=',chnobj)
 
     usrdata = appdb.readUserData(uid)
 

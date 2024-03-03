@@ -499,6 +499,7 @@ async def on_message(message):
         artcommands   = ('🎨', '📷','🖌️')
         videocommands = ('🎥','🎦')
         startcommands = ("🔄","🔃")
+        faisscommands = ("📡","🧠")
         validstarts  = newscommands + webcommands + artcommands + startcommands
 
         # if usrtext.startswith('?news') or usrtext.startswith('?^news') or usrtext.startswith('?web') or usrtext.startswith('?^web'):
@@ -548,6 +549,9 @@ async def on_message(message):
             elif usrtext.startswith(startcommands): # 🔄
                 ddgresult = "Start a new conversation. Begin by simply asking the user what they want to do. Do not provide any solutions yet." + ' ' + str(focustxt) + ' ' + textattach
                 appdb.resetUserData(threadseed)
+
+            elif usrtext.startwith(faisscommands):
+                ddgresult = ""
             
             tmpusrtext = f'{usrcmd} {ddgresult}'
 
