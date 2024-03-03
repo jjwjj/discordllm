@@ -11,6 +11,7 @@ Table of Contents:<br/>
 [2. Set up Discord Bot](#2-Discord-Bot)<br/>
 [3. Set up OpenAI](#3-OpenAI)<br/>
 [4. Access the Linux Instance](#4-SSH-Linux)<br/>
+[4. Install Newer Python](#5-Newer-Python)<br/>
 
 
 ____________________________
@@ -153,7 +154,7 @@ Here are some helpful links to SSH tools.<br/>
 
 ____________
 
-#5 
+## 5. Newer Python 
 **Installing the latest version of Python:** <br/>
 As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
 emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8, and I was able to move forward with newer versions of Python via virtual environments.
