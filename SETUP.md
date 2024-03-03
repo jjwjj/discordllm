@@ -11,7 +11,9 @@ Table of Contents:<br/>
 [2. Set up Discord Bot](#2-Discord-Bot)<br/>
 [3. Set up OpenAI](#3-OpenAI)<br/>
 [4. Access the Linux Instance](#4-SSH-Linux)<br/>
-[4. Install Newer Python](#5-Newer-Python)<br/>
+[5. Install Newer Python](#5-Newer-Python)<br/>
+[6. Create Virtual Environment](#6-Virtual-Environment)<br/>
+[7. Configure the Bot Software](#7-Software-Setup)<br/>
 
 
 ____________________________
@@ -172,7 +174,7 @@ Now we should have the latest version of Python installed. We can list the versi
 
 $ ls -ls /usr/bin/python*
 
-#6 
+## 6. Virtual Environment 
 **Creating a Virtual Environment** <br/>
 Once you've confirmed you have the latest python installed, you will make a virtual enviroment where we will add our working code.  I'm assuming some level of git understanding since you are here and won't go into the installation, workings, etc of git.  If you don't have a firm grasp on git, just download the code as a zip file and use sftp to drop the code here when we are done with the setup of the instance.
 
@@ -206,7 +208,8 @@ $ exit
 
 ____________
 
-#7 **Bot Software Setup**<br/>
+## 7. Software Setup 
+**Bot Software Setup**<br/>
 
 Now we should have all the pieces in place.  We will then need to set up the software. I will stipulate that you have installed the software in **/home/ec2-user/discordllm/src** if your path is different please adapt it to the path that you are using. 
 
