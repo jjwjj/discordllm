@@ -146,6 +146,9 @@ ____________
 #5 
 **Installing the latest version of Python:**<br/>
 As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
-emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8.
+emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8, and I was able to move forward with newer versions of Python via virtual environments.
+
+Whatever version of Python is on your Linux instance will run as default. This is largely due to the operating system's reliance on that specific version. What we are going to do is install a newer version, and let it run in parallel so it does not interfere with the base version. We will be using Python's virtual environment to run the newer version which will keep things nicely
+separated.
 
 
