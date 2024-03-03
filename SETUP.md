@@ -8,7 +8,7 @@ There are a few discrete parts of this system:
 ____________________________
 Table of Contents:<br/>
 [1. Set up AWS](#1-AWS)<br/>
-[2. Set up Discord Bot][#2-Set-Up-a-Discord-Bot]
+[2. Set up Discord Bot][#2-Discord-Bot]
 
 
 ## 1. AWS 
@@ -37,7 +37,9 @@ Give it a name so you can find it again later. Then click Create Instance:
 
 ____________________________
 
-## 2. Set Up a Discord Bot
+## 2. Discord Bot
+
+**Set Up a Discord Bot**
 
 Create a new bot on the Discord Developer Portal. https://discord.com/developers/applications
 Get the bot token, which you'll use to authenticate your bot with Discord's servers.
