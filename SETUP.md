@@ -6,11 +6,11 @@ There are a few discrete parts of this system:
 4. The code
 
 ____________________________
-Contents:
+Table of Contents:<br/>
 [Set up AWS](#1-AWS)
 
 
-## 1 AWS 
+## 1. AWS 
 **AWS:**<br/>
 I've been using AWS since 2010, so the easiest path for me was to set up a "Lightsail Amazon Linux" instance.
 
