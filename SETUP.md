@@ -8,11 +8,12 @@ There are a few discrete parts of this system:
 ____________________________
 Table of Contents:<br/>
 [1. Set up AWS](#1-AWS)<br/>
-[2. Set up Discord Bot](#2-Discord-Bot)
+[2. Set up Discord Bot](#2-Discord-Bot)<br/>
+[2. Set up OpenAI](#3-OpenAI)<br/>
 
 
 ## 1. AWS 
-**AWS:**<br/>
+**Set up AWS Instance:** <br/>
 I've been using AWS since 2010, so the easiest path for me was to set up a "Lightsail Amazon Linux" instance.
 
 If you are new to AWS, here's a quick overview:
@@ -121,7 +122,7 @@ Save Changes:
 
 ____________
 
-#3 
+## 3. OpenAI
 **OpenAI:**<br/>
 You will need an OpenAI key. <br/>
 Navigate to https://platform.openai.com<br/>
