@@ -9,9 +9,11 @@ ____________________________
 Table of Contents:<br/>
 [1. Set up AWS](#1-AWS)<br/>
 [2. Set up Discord Bot](#2-Discord-Bot)<br/>
-[2. Set up OpenAI](#3-OpenAI)<br/>
+[3. Set up OpenAI](#3-OpenAI)<br/>
+[4. Access the Linux Instance](#4-SSH-Linux)<br/>
 
 
+____________________________
 ## 1. AWS 
 **Set up AWS Instance:** <br/>
 I've been using AWS since 2010, so the easiest path for me was to set up a "Lightsail Amazon Linux" instance.
@@ -135,7 +137,7 @@ You will want to save this API Key in a safe place.
 
 ____________
 
-#4 
+## 4. SSH Linux 
 **Accessing the Remote Linux Command line:**<br/>
 Now that we have all of our keys, we need to access the instance and install the relevant software on the instance. I am running from a Windows machine, and have
 been partial to [bitvise](https://www.bitvise.com/ssh-client) as an SSH client. It does not matter which SSH client you use, in fact you can log into the terminal directly from AWS.
