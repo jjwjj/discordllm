@@ -122,7 +122,13 @@ Either create a new API Key, or copy an existing key.<br/>
 
 You will want to save this API Key in a safe place.
 
+____________
 
+#4 Accessing the Remote Linux Command line
+Now that we have all of our keys, we need to access the instance and install the relevant software on the instance. I am running from a Windows machine, and have
+been partial to bitvise(https://www.bitvise.com/ssh-client) as an SSH client. It does not matter which SSH client you use, in fact you can log into the terminal directly from AWS.
+
+The most important thing is that you will need to use your SSH key from Step #1 above in order to access the Linux instance.
 
 
 
