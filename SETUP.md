@@ -193,6 +193,31 @@ $ screen -r mybot
 To exit the screen session:<br/>
 $ exit
 
+____________
+
+#7 **Bot Software Setup**<br/>
+
+Now we should have all the pieces in place.  We will then need to set up the software. I will stipulate that you have installed the software in **/home/ec2-user/discordllm/src** if your path is different please adapt it to the path that you are using. 
+
+**A.** Lets get your API keys in the proper place.  Copy credentials_template.py to credentials.py the template is just a placeholder, and credentials.py is the live file. Needless to say, credentials.py is your secret and you should not share it.
+
+Inside credentials.py you will see two lines:
+
+openaikey = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Your OpenAI key <br/>
+discord_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" # Your Discord Token <br/>
+
+Paste the corresponding keys/tokens in the correct places, and save the file.
+
+**B.** you will need to change the permissions on the shell files to be executable from the command line.
+
+$ chmod 755 *.sh
+
+**C.** Run the setup script:
+
+$ ./setup.sh
+
+**D.** Now if everything has gone according to plan, you should be able to use your bot.
+
 
 
 
