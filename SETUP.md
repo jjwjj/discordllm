@@ -188,7 +188,7 @@ Create a new screen session:<br/>
 $ screen -S mybot
 
 If you disconnect, and want to get back to the running session:<br/>
-$ screen -f mybot
+$ screen -r mybot
 
 To exit the screen session:<br/>
 $ exit
