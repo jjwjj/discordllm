@@ -144,11 +144,56 @@ Here are some helpful links to SSH tools.<br/>
 ____________
 
 #5 
-**Installing the latest version of Python:**<br/>
+**Installing the latest version of Python:** <br/>
 As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
 emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8, and I was able to move forward with newer versions of Python via virtual environments.
 
 Whatever version of Python is on your Linux instance will run as default. This is largely due to the operating system's reliance on that specific version. What we are going to do is install a newer version, and let it run in parallel so it does not interfere with the base version. We will be using Python's virtual environment to run the newer version which will keep things nicely
 separated.
+
+The first step is to install the latest Python version. I am running Python 3.11, so we will base the install on 3.11<br/>
+At the command prompt, you will need to use dnf to install it with root permissions. The command below uses the -y switch to skip the prompts
+
+$ sudo dnf install python3.11 -y 
+$ sudo dnf install python3-pip
+
+Now we should have the latest version of Python installed. We can list the versions as follows:
+
+$ ls -ls /usr/bin/python*
+
+#6 
+**Creating a Virtual Environment** <br/>
+Once you've confirmed you have the latest python installed, you will make a virtual enviroment where we will add our working code.  I'm assuming some level of git understanding since you are here and won't go into the installation, workings, etc of git.  If you don't have a firm grasp on git, just download the code as a zip file and use sftp to drop the code here when we are done with the setup of the instance.
+
+Assuming you are in the ~/home folder on you instance, you'll want to create a virtual environment using the latest python version.  Here's how we do it with 3.11
+
+$ /usr/bin/python3.11 -m venv discordbot
+
+This will create a new folder called **discordbot** which we will copy the code into and use as our discord bot server.  We activate the virtual enviroment like this:
+
+$ source discordllm/bin/activate
+
+To exit the virtual environment we simply use:
+
+$ deactivate
+
+I like to add one more folder inside the discordbot folder called **src** which will hold all of the code.  For me, it keeps the folder structure cleaner. However you want to get the code into the src folder is outside the scope of this SETUP.md, and I will stipulate that you are able to get the code copied over, or with a git clone.
+
+Now that we have the basics in place, we will need to keep a perpetual bot server running.  There are a number of ways to do this, and if you are handy with bash scripting and the workings of linux feel free to implement as you desire. I myself have been taking an easier route by just using **screen**. Linux screen will keep everything running even if you disconnect from the instance. Here's a quick overview:
+
+List any running screen sessions:<br/>
+$ screen -ls 
+
+Create a new screen session:<br/>
+$ screen -S mybot
+
+If you disconnect, and want to get back to the running session:<br/>
+$ screen -f mybot
+
+To exit the screen session:<br/>
+$ exit
+
+
+
 
 
