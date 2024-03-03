@@ -5,7 +5,9 @@ There are a few discrete parts of this system:
 3. An OpenAI account
 4. The code
 
-#1. I've been using AWS since 2010, so the easiest path for me was to set up a "Lightsail Amazon Linux" instance.
+#1. 
+**AWS:**<br/>
+I've been using AWS since 2010, so the easiest path for me was to set up a "Lightsail Amazon Linux" instance.
 
 If you are new to AWS, here's a quick overview:
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/dc1fc8bb-4bd3-49a6-b76a-922cfc4daca5)
@@ -113,7 +115,7 @@ Save Changes:
 ____________
 
 #3 
-**OpenAI:**
+**OpenAI:**<br/>
 You will need an OpenAI key. <br/>
 Navigate to https://platform.openai.com<br/>
 ![image](https://github.com/jjwjj/discordllm/assets/9681066/b063988a-3a63-4b94-b9b3-11e1502ec047)
@@ -126,7 +128,7 @@ You will want to save this API Key in a safe place.
 ____________
 
 #4 
-**Accessing the Remote Linux Command line:**
+**Accessing the Remote Linux Command line:**<br/>
 Now that we have all of our keys, we need to access the instance and install the relevant software on the instance. I am running from a Windows machine, and have
 been partial to [bitvise](https://www.bitvise.com/ssh-client) as an SSH client. It does not matter which SSH client you use, in fact you can log into the terminal directly from AWS.
 
@@ -142,7 +144,7 @@ Here are some helpful links to SSH tools.<br/>
 ____________
 
 #5 
-**Installing the latest version of Python:**
+**Installing the latest version of Python:**<br/>
 As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
 emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8.
 
