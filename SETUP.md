@@ -208,15 +208,41 @@ discord_token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 Paste the corresponding keys/tokens in the correct places, and save the file.
 
-**B.** you will need to change the permissions on the shell files to be executable from the command line.
+**B.**  Navigate to the bot source code folder:
+
+$ cd /home/ec2-user/discordbot/src
+
+
+**C.** you will need to change the permissions on the shell files to be executable from the command line.
 
 $ chmod 755 *.sh
 
-**C.** Run the setup script:
+**D.** Run the setup script:
 
 $ ./setup.sh
 
-**D.** Now if everything has gone according to plan, you should be able to use your bot.
+**E.** Now if everything has gone according to plan, you should be able to use your bot.  First we will create a new screen (if you didn't do so in step #6). If you have already created it, then connect to it.
+
+$ screen -S mybot
+
+or if it is already running
+
+$ screen -r mybot
+
+Now start a virtual environment
+
+$ source /home/ec2-user/discordbot/bin/activate
+
+Navigate to the bot source code folder:
+
+$ cd /home/ec2-user/discordbot/src
+
+You can run the bot as follows:
+
+$ ./runbot.sh
+
+
+
 
 
 
