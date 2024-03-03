@@ -130,5 +130,13 @@ been partial to [bitvise](https://www.bitvise.com/ssh-client) as an SSH client. 
 
 The most important thing is that you will need to use your SSH key from Step #1 above in order to access the Linux instance.
 
+Here are some helpful links to SSH tools.<br/>
+[bitvise](https://www.bitvise.com/ssh-client)<br/>
+[macos ssh](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-linux-inst-ssh.html)<br/>
+[cyber duck](https://cyberduck.io/)<br/>
+[mountain duck](https://mountainduck.io/<br/>)
+
+
+
 
 
