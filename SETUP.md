@@ -137,6 +137,10 @@ Here are some helpful links to SSH tools.<br/>
 [mountain duck](https://mountainduck.io/<br/>)
 
 
+____________
 
+#5 Installing the latest version of Python
+As of this writing, the Linux instance comes installed with Python 3.9.  In previous versions of working with LLM libraries, I was working with a Python 3.8 base and as new LLMs 
+emerge, they are not good at backward compatibility. Most recently, Google's LLM did not work with 3.8.
 
 
