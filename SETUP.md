@@ -8,7 +8,7 @@ There are a few discrete parts of this system:
 ____________________________
 Table of Contents:<br/>
 [1. Set up AWS](#1-AWS)<br/>
-[2. Set up Discord Bot][#2-Discord-Bot]
+[2. Set up Discord Bot](#2-Discord-Bot)
 
 
 ## 1. AWS 
