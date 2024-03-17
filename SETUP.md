@@ -211,7 +211,7 @@ ____________
 ## 7. Software Setup 
 **Bot Software Setup**<br/>
 
-Now we should have all the pieces in place.  We will then need to set up the software. I will stipulate that you have installed the software in **/home/ec2-user/discordllm/src** if your path is different please adapt it to the path that you are using. 
+Now we should have all the pieces in place.  We will then need to set up the software. I will stipulate that you have installed the software in **/home/ec2-user/discordbot/src** if your path is different please adapt it to the path that you are using. 
 
 **A.** Lets get your API keys in the proper place.  Copy credentials_template.py to credentials.py the template is just a placeholder, and credentials.py is the live file. Needless to say, credentials.py is your secret and you should not share it.
 
