@@ -167,7 +167,7 @@ separated.
 The first step is to install the latest Python version. I am running Python 3.11, so we will base the install on 3.11<br/>
 At the command prompt, you will need to use dnf to install it with root permissions. The command below uses the -y switch to skip the prompts
 
-$ sudo dnf install python3.11 -y 
+$ sudo dnf install python3.11 -y <br/>
 $ sudo dnf install python3-pip
 
 Now we should have the latest version of Python installed. We can list the versions as follows:
