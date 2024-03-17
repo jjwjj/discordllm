@@ -184,7 +184,7 @@ $ /usr/bin/python3.11 -m venv discordbot
 
 This will create a new folder called **discordbot** which we will copy the code into and use as our discord bot server.  We activate the virtual enviroment like this:
 
-$ source discordllm/bin/activate
+$ source discordbot/bin/activate
 
 To exit the virtual environment we simply use:
 
