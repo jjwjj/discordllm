@@ -13,6 +13,30 @@ import os
 import time
 from bs4 import BeautifulSoup
 
+###############################################################################
+from langchain_community.vectorstores     import FAISS
+from langchain_openai                     import OpenAIEmbeddings
+from langchain_openai                     import ChatOpenAI
+from langchain.prompts                    import ChatPromptTemplate
+from langchain.schema.output_parser       import StrOutputParser
+from langchain.schema.runnable            import RunnablePassthrough
+from langchain_core.messages              import SystemMessage,AIMessage,HumanMessage
+from langchain_anthropic                  import ChatAnthropic
+from langchain_google_genai               import ChatGoogleGenerativeAI,HarmBlockThreshold,HarmCategory
+from langchain_mistralai.chat_models      import ChatMistralAI
+
+###############################################################################
+###############################################################################
+
+#     ######   ##        #######  ########     ###    ##        ######  
+#    ##    ##  ##       ##     ## ##     ##   ## ##   ##       ##    ## 
+#    ##        ##       ##     ## ##     ##  ##   ##  ##       ##       
+#    ##   #### ##       ##     ## ########  ##     ## ##        ######  
+#    ##    ##  ##       ##     ## ##     ## ######### ##             ## 
+#    ##    ##  ##       ##     ## ##     ## ##     ## ##       ##    ## 
+#     ######   ########  #######  ########  ##     ## ########  ######  
+
+
 oai = None
 yamlfile = 'instructions.yaml'
 aimodel  = credentials.aimodel
@@ -27,11 +51,9 @@ libraryurl  = "http://www.morrisheart.com/pauth/"
 
 oai = openai.OpenAI(api_key=credentials.openaikey)
 
-# aimodels  = {"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo"}
-# maxtokens = {"gpt-4":8192,"gpt-4-turbo":128000,"gpt-3.5-turbo":16384}
-aimodels   = {"gpt4":"gpt-4",     "gpt4t":"gpt-4-turbo",    "gpt35t":"gpt-3.5-turbo",   "claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro"}
-maxtokens  = {"gpt-4":8192,       "gpt-4-turbo":128000,     "gpt-3.5-turbo":16384,      "claude":200000,                  "mixtral":16384,              "google":999999}
-
+aimodels   = {"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo","claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro"}
+maxtokens  = {"gpt-4":8192,  "gpt-4-turbo":128000, "gpt-3.5-turbo":16384,   "claude-3-opus-20240229":200000,  "open-mixtral-8x7b":16384,    "gemini-1.0-pro":999999}
+# chatmodels = {"gpt-4":ChatOpenAI, "gpt-4-turbo":ChatOpenAI, "gpt-3.5-turbo":ChatOpenAI, "claude":ChatAnthropic,           "mixtral":ChatMistralAI,      "google":ChatGoogleGenerativeAI}
 
 
 ###############################################################################
@@ -98,7 +120,11 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
         "gpt-4-0613",
         "gpt-4-32k-0613",
         "gpt-4-1106-preview",
-        "gpt-4-turbo-preview"
+        "gpt-4-turbo-preview",
+        "gpt-4-turbo",
+        "claude-3-opus-20240229",
+        "open-mixtral-8x7b",
+        "gemini-1.0-pro"
         }:
         tokens_per_message = 3
         tokens_per_name = 1
@@ -128,7 +154,25 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
 
 
 ###############################################################################
-def chatgpt(messagearray,gptmodel):
+def convertToLangChain(messages):
+    langarr = []
+
+    for message in messages:
+        role = message["role"]
+        content = message["content"]
+    
+        if role == "user":
+            langarr.append(HumanMessage(content=content))
+        elif role == "assistant":
+            langarr.append(AIMessage(content=content))
+        elif role == "system":
+            langarr.append(SystemMessage(content=content))
+
+    return langarr
+                  
+
+###############################################################################
+def dochat(messagearray,gptmodel):
     # gptmodel = aimodel
 
     tryagain = True
@@ -142,11 +186,17 @@ def chatgpt(messagearray,gptmodel):
 
     print('#########################',tokencount,'#########################')
 
+    llm = getChatModel(gptmodel)
+
     while tryagain:
         try:
-            response = oai.chat.completions.create(model=gptmodel,
-                messages = messagearray
-            )
+            # response = oai.chat.completions.create(model=gptmodel,
+            #     messages = messagearray
+            # )
+            langarr  = convertToLangChain(messagearray)
+            response = llm.invoke(langarr)
+
+            # print(f'dochat: {response}')
             tryagain = False
         except Exception as err:
             if (str(err).find('maximum context length') > -1):
@@ -266,96 +316,96 @@ def matchForms(drugname,formvector,jobj):
 
 
 ###############################################################################
-def chatty():
-    global oai
+# def chatty():
+#     global oai
 
-    oai = openai.OpenAI(api_key=credentials.openaikey)
+#     oai = openai.OpenAI(api_key=credentials.openaikey)
 
-    drugjson = loadJson('pauth.json')
+#     drugjson = loadJson('pauth.json')
 
-    chatty  = getchatty()
-    persona = 'pauth'
+#     chatty  = getchatty()
+#     persona = 'pauth'
 
-    disclaimer = "I understand that this is an AI solution. Please refrain from providing anything that can be construed as a disclaimer."
-    params     = f'{disclaimer}'
-
-
-    sysreq = chatty[persona]["sys"]
-    usrtxt = chatty[persona]["usr"]
-    endtxt = chatty[persona]["suffix"]
-
-    uid = "U07856"
-    promptcount = 1
-
-    msgarr = [{"role": "system", "content": sysreq}]
-    appdb.updateUserData(uid,msgarr,promptcount)
+#     disclaimer = "I understand that this is an AI solution. Please refrain from providing anything that can be construed as a disclaimer."
+#     params     = f'{disclaimer}'
 
 
-    doloop = True
-    restart = False
+#     sysreq = chatty[persona]["sys"]
+#     usrtxt = chatty[persona]["usr"]
+#     endtxt = chatty[persona]["suffix"]
 
-    
+#     uid = "U07856"
+#     promptcount = 1
+
+#     msgarr = [{"role": "system", "content": sysreq}]
+#     appdb.updateUserData(uid,msgarr,promptcount)
 
 
-    intxt = "Start a new auth"
-    while doloop:
-        
-        
-        usrreq = f'{params}{usrtxt}{intxt}{endtxt}'
-        print(usrreq)
-
-        usrdata = appdb.readUserData(uid)
-        msgarr = usrdata["MsgArray"] if usrdata and "MsgArray" in usrdata else []
-        promptcount = (usrdata["PromptCount"] + 1) if usrdata and "PromptCount" in usrdata else 0
-
-        msgarr.append({"role": "user", "content": usrreq})
-        response,msgarr = chatgpt(msgarr)    #.encode(encoding='ASCII',errors='ignore').decode()
-
-        choice = response.choices[0]
-        restxt = choice.message.content
-        tokens = response.usage.total_tokens
-
-        msgarr.append({"role": "assistant", "content":str(restxt)})
-        appdb.updateUserData(uid,msgarr,promptcount)
-        # print(msgarr)
-        # print(f'(tokens:{tokens}): {wraplines(restxt)}')
-        
-
-        # if ("DRUGNAME:" in restxt) and ("FORMNAME:" in restxt):
-        #     drugname = getafterkeyword(restxt,"DRUGNAME:","\n")
-        #     formname = getafterkeyword(restxt,"FORMNAME:","\n")
-        #     print(f'Name of the drug is {drugname} and the name of the form is {formname}')
-
-        #     drugvector = embed(drugname)
-        #     formvector = embed(formname)
-
-        #     # listDrugs(drugjson)
-        #     # listForms(drugjson)
-
-        #     matcheddrug = matchDrugs(drugvector,drugjson)
-        #     matchedinfo = matchForms(matcheddrug,formvector,drugjson)
-
-        #     print(f'Information file is {libraryurl}{matchedinfo}')
-
-        #     # doloop = False
-
-        #     # pauthdb.resetUserData(uid)
-
-        # else:
-        #     print(f'(tokens:{tokens}): {restxt}')
-
-        intxt = getinput(persona)
-
-        if (intxt.startswith("!reset")):
-            intxt = "Start a new auth"
-            appdb.resetUserData(uid)
-        elif (intxt.startswith("!quit")):
-            doloop = False
-            appdb.resetUserData(uid)
-
+#     doloop = True
+#     restart = False
 
     
-    return restart
+
+
+#     intxt = "Start a new auth"
+#     while doloop:
+        
+        
+#         usrreq = f'{params}{usrtxt}{intxt}{endtxt}'
+#         print(usrreq)
+
+#         usrdata = appdb.readUserData(uid)
+#         msgarr = usrdata["MsgArray"] if usrdata and "MsgArray" in usrdata else []
+#         promptcount = (usrdata["PromptCount"] + 1) if usrdata and "PromptCount" in usrdata else 0
+
+#         msgarr.append({"role": "user", "content": usrreq})
+#         response,msgarr = chatgpt(msgarr)    #.encode(encoding='ASCII',errors='ignore').decode()
+
+#         choice = response.choices[0]
+#         restxt = choice.message.content
+#         tokens = response.usage.total_tokens
+
+#         msgarr.append({"role": "assistant", "content":str(restxt)})
+#         appdb.updateUserData(uid,msgarr,promptcount)
+#         # print(msgarr)
+#         # print(f'(tokens:{tokens}): {wraplines(restxt)}')
+        
+
+#         # if ("DRUGNAME:" in restxt) and ("FORMNAME:" in restxt):
+#         #     drugname = getafterkeyword(restxt,"DRUGNAME:","\n")
+#         #     formname = getafterkeyword(restxt,"FORMNAME:","\n")
+#         #     print(f'Name of the drug is {drugname} and the name of the form is {formname}')
+
+#         #     drugvector = embed(drugname)
+#         #     formvector = embed(formname)
+
+#         #     # listDrugs(drugjson)
+#         #     # listForms(drugjson)
+
+#         #     matcheddrug = matchDrugs(drugvector,drugjson)
+#         #     matchedinfo = matchForms(matcheddrug,formvector,drugjson)
+
+#         #     print(f'Information file is {libraryurl}{matchedinfo}')
+
+#         #     # doloop = False
+
+#         #     # pauthdb.resetUserData(uid)
+
+#         # else:
+#         #     print(f'(tokens:{tokens}): {restxt}')
+
+#         intxt = getinput(persona)
+
+#         if (intxt.startswith("!reset")):
+#             intxt = "Start a new auth"
+#             appdb.resetUserData(uid)
+#         elif (intxt.startswith("!quit")):
+#             doloop = False
+#             appdb.resetUserData(uid)
+
+
+    
+#     return restart
 
 
 
@@ -363,6 +413,9 @@ def chatty():
 def newmsgarr(uid,sysreq):
     promptcount = 0
     msgarr = [{"role": "system", "content": sysreq}]
+    # msgarr = [SystemMessage(content=sysreq)]
+    print(SystemMessage(content=sysreq))
+
     appdb.updateUserData(uid,msgarr,promptcount)
 
     return msgarr
@@ -415,12 +468,40 @@ def decodeModel(modelname):
     if modelname in aimodels:
         model = aimodels[modelname]
 
-    # print(f'decodeModel({modelname}) = {model}')
+    print(f'decodeModel({modelname}) = {model}')
 
     return model
 
 ###############################################################################
-def onechat(uid,intxt,persona="default",model=credentials.aimodel):
+def getChatModel(modelname):
+    temperature = 0.0
+
+    print(f'getChatModel({modelname}) with aimodels={aimodels}')
+
+    # if modelname in aimodels:
+    if modelname in maxtokens:
+        # aimodel = decodeModel(modelname)
+        aimodel = modelname
+
+        if modelname == "claude-3-opus-20240229":
+            chatmodel = ChatAnthropic(temperature=temperature,model_name=aimodel)
+        elif modelname == "open-mixtral-8x7b":
+            chatmodel = ChatMistralAI(temperature=temperature,model_name=aimodel)
+        elif modelname == "gemini-1.0-pro":
+            googlesafety = {
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE
+            }
+            chatmodel = ChatGoogleGenerativeAI(temperature=temperature,model=aimodel,convert_system_message_to_human=True,safety_settings=googlesafety)
+        else:
+            chatmodel = ChatOpenAI(temperature=temperature,model_name=aimodel)
+
+    return chatmodel
+
+###############################################################################
+def onelang(uid,intxt,persona="default",model=credentials.aimodel):
     global oai
 
     chatty  = getchatty()
@@ -474,18 +555,25 @@ def onechat(uid,intxt,persona="default",model=credentials.aimodel):
 
     
     
-    # msgarr.append({"role": "user", "content": usrreq})
-    msgarr.append({"role": "user", "content": intxt})
+    msgarr.append({"role": "user", "content": usrreq})
+    
+    # msgarr.append({"role": "user", "content": intxt})
+    # msgarr.append(HumanMessage(content=usrreq))
+
     # print(msgarr)
 
 
-    response,msgarr = chatgpt(msgarr,model)    #.encode(encoding='ASCII',errors='ignore').decode()
+    response,msgarr = dochat(msgarr,model)    #.encode(encoding='ASCII',errors='ignore').decode()
 
-    choice = response.choices[0]
-    restxt = choice.message.content
-    tokens = response.usage.total_tokens
+    # choice = response.choices[0]
+    # restxt = choice.message.content
+    # tokens = response.usage.total_tokens
+    print(response)
+
+    restxt = response.content
 
     msgarr.append({"role": "assistant", "content":str(restxt)})
+    # msgarr.append(AIMessage(content=str(restxt)))
 
     # print(str(msgarr))
 

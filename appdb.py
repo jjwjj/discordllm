@@ -40,6 +40,8 @@ def readUserData(user_id, db_name=dbname):
 ###############################################################################
 def updateUserData(user_id, msg_array, prompt_count, db_name=dbname):
     # Convert the list of dictionaries to a JSON string for storage
+
+    # print(f'updateUserData: {msg_array}\n\n')
     msg_array_json = json.dumps(msg_array) if msg_array is not None else None
 
     connection = sqlite3.connect(db_name)

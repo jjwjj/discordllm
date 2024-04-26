@@ -1,12 +1,13 @@
 ###############################################################################
 ###############################################################################
 
-#     ██ ███    ███ ██████   ██████  ██████  ████████ ███████ 
-#     ██ ████  ████ ██   ██ ██    ██ ██   ██    ██    ██      
-#     ██ ██ ████ ██ ██████  ██    ██ ██████     ██    ███████ 
-#     ██ ██  ██  ██ ██      ██    ██ ██   ██    ██         ██ 
-#     ██ ██      ██ ██       ██████  ██   ██    ██    ███████ 
-#                                                             
+#    #### ##     ## ########   #######  ########  ########  ######  
+#     ##  ###   ### ##     ## ##     ## ##     ##    ##    ##    ## 
+#     ##  #### #### ##     ## ##     ## ##     ##    ##    ##       
+#     ##  ## ### ## ########  ##     ## ########     ##     ######  
+#     ##  ##     ## ##        ##     ## ##   ##      ##          ## 
+#     ##  ##     ## ##        ##     ## ##    ##     ##    ##    ## 
+#    #### ##     ## ##         #######  ##     ##    ##     ######                                                         
 
 
 import discord
@@ -14,6 +15,7 @@ import os
 # from openai import OpenAI
 import credentials
 import appchat
+import langchat
 import appdb
 import requests
 from datetime import datetime
@@ -25,18 +27,20 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import ddgfn
 import unicodedata
+import appfns
 
 
 ###############################################################################
 ###############################################################################
 
 
-#      ██████  ██       ██████  ██████   █████  ██      ███████ 
-#     ██       ██      ██    ██ ██   ██ ██   ██ ██      ██      
-#     ██   ███ ██      ██    ██ ██████  ███████ ██      ███████ 
-#     ██    ██ ██      ██    ██ ██   ██ ██   ██ ██           ██ 
-#      ██████  ███████  ██████  ██████  ██   ██ ███████ ███████ 
-#                                                               
+#     ######   ##        #######  ########     ###    ##        ######  
+#    ##    ##  ##       ##     ## ##     ##   ## ##   ##       ##    ## 
+#    ##        ##       ##     ## ##     ##  ##   ##  ##       ##       
+#    ##   #### ##       ##     ## ########  ##     ## ##        ######  
+#    ##    ##  ##       ##     ## ##     ## ######### ##             ## 
+#    ##    ##  ##       ##     ## ##     ## ##     ## ##       ##    ## 
+#     ######   ########  #######  ########  ##     ## ########  ######                                                        
                                                               
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -388,8 +392,13 @@ async def on_message(message):
     userid  = str(message.author)
     usrtext = message.content
     usrmention = message.author.mention
+    botmention = f'<@{client.user.id}>'
     channelobj = message.channel
     say = send_long_message
+    isfaiss = False
+    islang  = True
+    usebot = False
+
 
 
     # avoid the bot talking to itself
@@ -399,6 +408,35 @@ async def on_message(message):
     # ignore comments
     if usrtext.startswith('//'):
         return
+
+    #-------------------------------------------------------------------------------
+    # print(usrtext)
+    print(client.user.id)
+
+    
+    if usebot == True:
+        if usrtext.startswith(botmention):
+            newtext = usrtext.replace(botmention,'').strip()
+            print(str(client.user))
+            print(newtext)
+            usrtext = newtext
+
+        elif usrtext.startswith('@bot'):
+            newtext = usrtext.replace('@bot','').strip()
+            print('started with @bot')
+            print(newtext)
+            usrtext = newtext
+        else:
+            return
+        
+
+
+
+    # # Check if the bot is specifically mentioned
+    # if client.user in message.mentions:
+    #     print(f"Bot was mentioned in message: {message.content}")
+    # #-------------------------------------------------------------------------------
+    
     
     # reboot the server
     if usrtext.startswith(credentials.rebootserver):
@@ -409,7 +447,34 @@ async def on_message(message):
         # else:
         #     await send_long_message(userid,msg)
         os._exit(0)
+
+        # # determine if in channel or if direct message
+    if message.guild:  # in a channel -- multiple users can talk to the bot at once, use the channel id as the thread key
+        threadseed = str(message.channel.id)
+    else: # direct message, use the userid as the thread key
+        threadseed = userid
+
+
+#                        __       __                                                      __
+#       ____ ___  ____ _/ /______/ /_     _________  ____ ___  ____ ___  ____ _____  ____/ /
+#      / __ `__ \/ __ `/ __/ ___/ __ \   / ___/ __ \/ __ `__ \/ __ `__ \/ __ `/ __ \/ __  / 
+#     / / / / / / /_/ / /_/ /__/ / / /  / /__/ /_/ / / / / / / / / / / / /_/ / / / / /_/ /  
+#    /_/ /_/ /_/\__,_/\__/\___/_/ /_/   \___/\____/_/ /_/ /_/_/ /_/ /_/\__,_/_/ /_/\__,_/   
+
     
+    # if usrtext.startswith("'") or usrtext.startswith('"') or usrtext.startswith('`'):
+    #     usrtext = usrtext[1:]
+    # else:
+    if usrtext.startswith("!"):
+        matchedcommand = appfns.matchCommand(usrtext,appfns.matchcommandsysrole)    
+        print(f'matchedcommand={matchedcommand}')
+
+        if (matchedcommand.startswith('!')):
+            matchedtext = appfns.preProcessCommand(matchedcommand,usrtext) #matchedcommand
+            print(f'matchedtext={matchedtext}')
+            # usrtext = matchedtext.replace(matchedcommand,'').strip()
+            print(f'modified usrtext={usrtext}')
+
 
 
     focustxt = ""
@@ -421,7 +486,16 @@ async def on_message(message):
     textattach = ""
     msgalert   = ""
 
+
+
     urltext = urlFromText(usrtext)
+
+#        __    __  __                          
+#       / /_  / /_/ /_____     ________  ____ _
+#      / __ \/ __/ __/ __ \   / ___/ _ \/ __ `/
+#     / / / / /_/ /_/ /_/ /  / /  /  __/ /_/ / 
+#    /_/ /_/\__/\__/ .___/  /_/   \___/\__, /  
+#                 /_/                    /_/   
 
     if (urltext is not None) and (not message.attachments):
         # print(urltext)
@@ -432,11 +506,13 @@ async def on_message(message):
             print(f'extracted the following from {urltext}\n\n{textattach}')
             tmp = usrtext.replace(urltext, textattach)
             usrtext = tmp
+            appchat.nonchat(threadseed, urltext,textattach, persona)
             textattach = ""
 
             print()
             print('new usrtext=',usrtext)
             print('/\\'*50)
+            msgalert = f"\n\n**The URL has been processed. The response is displayed, what are the next steps?**\n\n\n"
 
     elif message.attachments or message.embeds:
         isReject = True
@@ -469,14 +545,22 @@ async def on_message(message):
                         with ThreadPoolExecutor() as executor:
                             textattach = await getPromptResponse(executor, appchat.processImageVision, attachment.url, imgtxt)   
 
-                    if (usrtext.startswith('^')):
-                        # if message.guild:
-                        #     # await send_long_message(message.channel,msg)
-                        #     await say(channelobj,textattach)
-                        # else:
-                        #     # await send_long_message(message.author,msg)
-                        #     await say(userid,textattach)
-                        await typingSend(message,textattach)
+
+                    print(f"Image Description: {textattach}")
+                    appchat.nonchat(threadseed,"this is an image",textattach, persona)
+                    await typingSend(message,textattach)
+
+                    # if (usrtext.startswith('^')):
+                    #     # if message.guild:
+                    #     #     # await send_long_message(message.channel,msg)
+                    #     #     await say(channelobj,textattach)
+                    #     # else:
+                    #     #     # await send_long_message(message.author,msg)
+                    #     #     await say(userid,textattach)
+                    #     await typingSend(message,textattach)
+
+                    return
+                        
                         
 
                     isReject = False
@@ -519,12 +603,12 @@ async def on_message(message):
     # print('prompt = ',prompt)
 
 
-    # determine if in channel or if direct message
+    # # determine if in channel or if direct message
     if message.guild:  # in a channel -- multiple users can talk to the bot at once, use the channel id as the thread key
-        threadseed = str(message.channel.id)
+        # threadseed = str(message.channel.id)
         msgalert   = f'{usrmention} {msgalert}'
-    else: # direct message, use the userid as the thread key
-        threadseed = userid
+    # else: # direct message, use the userid as the thread key
+    #     threadseed = userid
 
 
 
@@ -540,7 +624,7 @@ async def on_message(message):
     qcommands = ('?',)
     emojiCommand = isFirstCharacterEmoji(usrtext)
         
-    # print(f'is First Char Emoji? {isFirstCharacterEmoji(usrtext)}')    
+    print(f'is First Char Emoji? {isFirstCharacterEmoji(usrtext)}')    
     
     # if usrtext.startswith('?')  or usrtext.startswith('🔍')  or usrtext.startswith('📰'):
     if usrtext.startswith(qcommands) or emojiCommand:
@@ -555,8 +639,8 @@ async def on_message(message):
         artcommands   = ('🎨', '📷','🖌️')
         videocommands = ('🎥','🎦')
         startcommands = ("🔄","🔃")
-        faisscommands = ("📡","🧠")
-        validstarts  = newscommands + webcommands + artcommands + startcommands
+        faisscommands = ("📡","🧠","💡")
+        validstarts  = newscommands + webcommands + artcommands + startcommands + faisscommands
 
         # if usrtext.startswith('?news') or usrtext.startswith('?^news') or usrtext.startswith('?web') or usrtext.startswith('?^web'):
         if usrtext.startswith(validstarts):
@@ -606,8 +690,10 @@ async def on_message(message):
                 ddgresult = "Start a new conversation. Begin by simply asking the user what they want to do. Do not provide any solutions yet." + ' ' + str(focustxt) + ' ' + textattach
                 appdb.resetUserData(threadseed)
 
-            elif usrtext.startwith(faisscommands):
-                ddgresult = ""
+            elif usrtext.startswith(faisscommands):
+                # print(f'+++++++++++++++++++++++++ command faiss usrtext={usrtext} usrcmd={usrcmd} tmptext={tmptext}')
+                ddgresult = tmptext
+                isfaiss = True
             
             tmpusrtext = f'{usrcmd} {ddgresult}'
 
@@ -655,6 +741,7 @@ async def on_message(message):
         
         elif usrtext.startswith("!reset") or usrtext.startswith("!start"):
             prompt = "Start a new conversation. Begin by simply asking the user what they want to do. Do not provide any solutions yet." + ' ' + str(focustxt) + ' ' + textattach
+            print(prompt)
             appdb.resetUserData(threadseed)
         
         elif usrtext.startswith('!ping'):
@@ -726,8 +813,45 @@ async def on_message(message):
 
             return
         
+        elif usrtext.startswith('!news'):
+            firstSpace = usrtext.find(' ')
+            searchtext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+            print(f'searchtext={searchtext}')
+
+            async with message.channel.typing():
+                with ThreadPoolExecutor() as executor:
+                    ddgresult = await getPromptResponse(executor, ddgfn.ddgNews, searchtext)
+                                
+                appchat.nonchat(threadseed, searchtext,ddgresult, persona)
+            
+            await typingSend(message,ddgresult)
+            return
+        
+        elif usrtext.startswith('!web'):
+            firstSpace = usrtext.find(' ')
+            searchtext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+            print(f'found command==!web. searchtext={searchtext}')
+
+            async with message.channel.typing():
+                # with ThreadPoolExecutor() as executor:
+                #     ddgresult = await getPromptResponse(executor, ddgfn.ddgText, searchtext)
+
+                ddgresult = ddgfn.ddgText(searchtext)
+                
+                appchat.nonchat(threadseed, searchtext,ddgresult, persona)
+
+                feedback = f"Result of the search is:\n\n{ddgresult}\n\nWhat are the next steps?"
+            
+            await typingSend(message,feedback)
+            return
+
+
+        elif usrtext.startswith('!url'):
+            return
+        
         else:
-            msg = "No Matching Command"
+            # msg = "No Matching Command"
+            msg = f"Command not recognized.\n\n{usrtext}\n\nPlease use !help for a list of available commands."
             await typingSend(message,msg)
             return
 
@@ -744,13 +868,19 @@ async def on_message(message):
     # ██      ██   ██  ██████  ██      ██ ██         ██        ███████ ███████ ██      ██ 
                                                                                         
 
-    # print(prompt)
+    print(f"processing {prompt}")
 
     t0 = time.time()
     async with message.channel.typing():
         with ThreadPoolExecutor() as executor:
             # print(f'calling onechat with aimodel={aimodel}')
-            msg = await getPromptResponse(executor, appchat.onechat, threadseed, prompt, persona, aimodel)        
+            if isfaiss:
+                print(f'>>>>>>>>>> isfaiss: prompt={prompt}')
+                msg = await getPromptResponse(executor, langchat.onefaiss, threadseed, prompt, persona, aimodel)        
+            elif islang:
+                msg = await getPromptResponse(executor, langchat.onelang, threadseed, prompt, persona, aimodel)
+            else:
+                msg = await getPromptResponse(executor, appchat.onechat, threadseed, prompt, persona, aimodel)        
         
 
     t1 = time.time()

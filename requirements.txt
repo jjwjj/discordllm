@@ -1,3 +1,4 @@
+wheel
 discord
 PyYAML
 openai
@@ -6,5 +7,10 @@ numpy
 beautifulsoup4
 pytz
 duckduckgo-search
-
-
+langchain
+langchain_openai
+langchain_community
+faiss-cpu
+langchain-google-genai 
+langchain-mistralai
+langchain-anthropic
