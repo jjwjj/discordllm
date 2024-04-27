@@ -24,6 +24,7 @@ from langchain_core.messages              import SystemMessage,AIMessage,HumanMe
 from langchain_anthropic                  import ChatAnthropic
 from langchain_google_genai               import ChatGoogleGenerativeAI,HarmBlockThreshold,HarmCategory
 from langchain_mistralai.chat_models      import ChatMistralAI
+from langchain_fireworks                  import ChatFireworks
 
 ###############################################################################
 ###############################################################################
@@ -51,8 +52,8 @@ libraryurl  = "http://www.morrisheart.com/pauth/"
 
 oai = openai.OpenAI(api_key=credentials.openaikey)
 
-aimodels   = {"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo","claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro"}
-maxtokens  = {"gpt-4":8192,  "gpt-4-turbo":128000, "gpt-3.5-turbo":16384,   "claude-3-opus-20240229":200000,  "open-mixtral-8x7b":16384,    "gemini-1.0-pro":999999}
+aimodels   = {"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo","claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro","llama":"llama-v3-70b-instruct"}
+maxtokens  = {"gpt-4":8192,  "gpt-4-turbo":128000, "gpt-3.5-turbo":16384,   "claude-3-opus-20240229":200000,  "open-mixtral-8x7b":16384,    "gemini-1.0-pro":999999,  "llama-v3-70b-instruct":65535}
 # chatmodels = {"gpt-4":ChatOpenAI, "gpt-4-turbo":ChatOpenAI, "gpt-3.5-turbo":ChatOpenAI, "claude":ChatAnthropic,           "mixtral":ChatMistralAI,      "google":ChatGoogleGenerativeAI}
 
 
@@ -124,7 +125,8 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
         "gpt-4-turbo",
         "claude-3-opus-20240229",
         "open-mixtral-8x7b",
-        "gemini-1.0-pro"
+        "gemini-1.0-pro",
+        "llama-v3-70b-instruct"
         }:
         tokens_per_message = 3
         tokens_per_name = 1
@@ -474,7 +476,7 @@ def decodeModel(modelname):
 
 ###############################################################################
 def getChatModel(modelname):
-    temperature = 0.0
+    temperature = 0
 
     print(f'getChatModel({modelname}) with aimodels={aimodels}')
 
@@ -486,7 +488,12 @@ def getChatModel(modelname):
         if modelname == "claude-3-opus-20240229":
             chatmodel = ChatAnthropic(temperature=temperature,model_name=aimodel)
         elif modelname == "open-mixtral-8x7b":
-            chatmodel = ChatMistralAI(temperature=temperature,model_name=aimodel)
+            aimodel = "accounts/fireworks/models/mixtral-8x7b-instruct"
+            # chatmodel = ChatMistralAI(temperature=temperature,model_name=aimodel)
+            chatmodel = ChatFireworks(temperature=1,model=aimodel)
+        elif modelname == "llama-v3-70b-instruct":
+            aimodel = "accounts/fireworks/models/llama-v3-70b-instruct"
+            chatmodel = ChatFireworks(temperature=temperature,model=aimodel)
         elif modelname == "gemini-1.0-pro":
             googlesafety = {
                 HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,

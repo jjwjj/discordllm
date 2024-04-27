@@ -14,3 +14,4 @@ faiss-cpu
 langchain-google-genai 
 langchain-mistralai
 langchain-anthropic
+langchain-fireworks

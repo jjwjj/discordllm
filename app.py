@@ -258,7 +258,8 @@ def extractScopeAndPersona(message):
     personaValue = personaMatch.group(1) if personaMatch else "default"
     modelCode = modelMatch.group(1) if modelMatch else None
 
-    modelValue = appchat.decodeModel(modelCode)
+    
+    modelValue = langchat.decodeModel(modelCode)
 
         
 
@@ -784,7 +785,11 @@ async def on_message(message):
             return
         
         elif usrtext.startswith('!models'):
-            msg  = appchat.listModels()
+            if islang:
+                msg = langchat.listModels()
+            else:
+                msg  = appchat.listModels()
+
             msg += f'current model is {aimodel}'
             # print(msg)
             await typingSend(message,msg)
