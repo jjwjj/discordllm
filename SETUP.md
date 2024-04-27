@@ -14,6 +14,7 @@ Table of Contents:<br/>
 [5. Install Newer Python](#5-Newer-Python)<br/>
 [6. Create Virtual Environment](#6-Virtual-Environment)<br/>
 [7. Configure the Bot Software](#7-Software-Setup)<br/>
+[8. Use more LLMs](#8-Other-LLMs)<br/>
 
 
 ____________________________
@@ -257,7 +258,10 @@ $ ./runbot.sh
 
 
 
-
+## 8. Other LLMs
+Anthropic == Claude == https://console.anthropic.com/settings/keys 
+Google == Gemini == https://aistudio.google.com/app/apikey
+Fireworks == Mixtral and Llama == https://fireworks.ai/api-keys
 
 
 
