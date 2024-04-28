@@ -20,6 +20,8 @@ anthropicaikey = 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 huggingfacekey = 'hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 exaapikey      = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 mistralkey     = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+groqkey        = 'gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
 
 
 
@@ -58,6 +60,7 @@ os.environ['ANTHROPIC_API_KEY']        = anthropicaikey
 os.environ['HUGGINGFACEHUB_API_TOKEN'] = huggingfacekey
 os.environ['MISTRAL_API_KEY']          = mistralkey
 os.environ['EXA_API_KEY']              = exaapikey
+os.environ['GROQ_API_KEY']             = groqkey
 os.environ['OPENAI_MODEL_NAME']        = aimodel
 
 
