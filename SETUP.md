@@ -261,7 +261,8 @@ $ ./runbot.sh
 ## 8. Other LLMs
 Anthropic == Claude == https://console.anthropic.com/settings/keys <br/>
 Google == Gemini == https://aistudio.google.com/app/apikey <br/>
-Fireworks == Mixtral and Llama == https://fireworks.ai/api-keys <br/>
+Fireworks == Mixtral and Llama3 == https://fireworks.ai/api-keys <br/>
+Groq == Mixtral and Llama3 == https://console.groq.com/keys<br/>
 
 
 
