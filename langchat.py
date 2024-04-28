@@ -148,8 +148,12 @@ def getlines():
 
 
 ###############################################################################
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
+def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt4t"):
     """Return the number of tokens used by a list of messages."""
+
+    
+    model = modelsobj[modelcode]['model']
+
     try:
         encoding = tiktoken.encoding_for_model(model)
     except KeyError:
@@ -220,13 +224,14 @@ def dochat(messagearray,gptmodel,modelcode):
     # gptmodel = aimodel
 
     tryagain = True
-    poptokens = maxtokens[gptmodel] - avgmsgtkn
+    # poptokens = maxtokens[gptmodel] - avgmsgtkn
+    poptokens = int(modelsobj[modelcode]['maxtokens']) - avgmsgtkn
     
-    tokencount = num_tokens_from_messages(messagearray,gptmodel)
+    tokencount = num_tokens_from_messages(messagearray,gptmodel,modelcode)
 
     while tokencount > poptokens:
         messagearray.pop(1)
-        tokencount = num_tokens_from_messages(messagearray,gptmodel)
+        tokencount = num_tokens_from_messages(messagearray,gptmodel,modelcode)
 
     print('#########################',tokencount,'#########################')
 
