@@ -25,6 +25,7 @@ from langchain_anthropic                  import ChatAnthropic
 from langchain_google_genai               import ChatGoogleGenerativeAI,HarmBlockThreshold,HarmCategory
 from langchain_mistralai.chat_models      import ChatMistralAI
 from langchain_fireworks                  import ChatFireworks
+from langchain_groq                       import ChatGroq
 
 ###############################################################################
 ###############################################################################
@@ -40,6 +41,7 @@ from langchain_fireworks                  import ChatFireworks
 
 oai = None
 yamlfile = 'instructions.yaml'
+aiyaml   = 'ai.yaml'
 aimodel  = credentials.aimodel
 embedmodel = credentials.embedmodel
 
@@ -52,9 +54,49 @@ libraryurl  = "http://www.morrisheart.com/pauth/"
 
 oai = openai.OpenAI(api_key=credentials.openaikey)
 
-aimodels   = {"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo","claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro","llama":"llama-v3-70b-instruct"}
+aimodels   = None #{"gpt4":"gpt-4","gpt4t":"gpt-4-turbo","gpt35t":"gpt-3.5-turbo","claude":"claude-3-opus-20240229","mixtral":"open-mixtral-8x7b","google":"gemini-1.0-pro","llama":"llama-v3-70b-instruct"}
 maxtokens  = {"gpt-4":8192,  "gpt-4-turbo":128000, "gpt-3.5-turbo":16384,   "claude-3-opus-20240229":200000,  "open-mixtral-8x7b":16384,    "gemini-1.0-pro":999999,  "llama-v3-70b-instruct":65535}
 # chatmodels = {"gpt-4":ChatOpenAI, "gpt-4-turbo":ChatOpenAI, "gpt-3.5-turbo":ChatOpenAI, "claude":ChatAnthropic,           "mixtral":ChatMistralAI,      "google":ChatGoogleGenerativeAI}
+
+modelsobj = None
+
+
+################################################################################
+def getModels():
+
+    aimodels = {}
+
+    with open('modelconfig.yaml', 'r') as file:
+        try:
+            aiconfig = yaml.safe_load(file)
+        except yaml.YAMLError as exc:
+            print(exc)
+    
+    #traverse the dictionary and if the value of the key 'active' is True, add it to the aimodels dictionary
+    for key, value in aiconfig.items():
+        if value['active']:
+            aimodels[key] = value
+
+    # print(aiconfig)
+    return aimodels
+
+
+################################################################################
+def getModelNames(modelobj):
+    # create a new dictionary from aimodels of just the model name and the model type
+    modeldict = {}
+    for key, value in modelobj.items():
+        modeldict[key] = value['model']
+
+    return modeldict
+
+###############################################################################
+def refreshModels():
+    global modelsobj
+    global aimodels
+
+    modelsobj = getModels()
+    aimodels = getModelNames(modelsobj)
 
 
 ###############################################################################
@@ -174,7 +216,7 @@ def convertToLangChain(messages):
                   
 
 ###############################################################################
-def dochat(messagearray,gptmodel):
+def dochat(messagearray,gptmodel,modelcode):
     # gptmodel = aimodel
 
     tryagain = True
@@ -188,7 +230,7 @@ def dochat(messagearray,gptmodel):
 
     print('#########################',tokencount,'#########################')
 
-    llm = getChatModel(gptmodel)
+    llm = getChatModel(gptmodel,modelcode)
 
     while tryagain:
         try:
@@ -475,40 +517,49 @@ def decodeModel(modelname):
     return model
 
 ###############################################################################
-def getChatModel(modelname):
+def getChatModel(modelname,modelcode):
     temperature = 0
 
     print(f'getChatModel({modelname}) with aimodels={aimodels}')
+    
+    print('~'*40)
+    print(modelsobj[modelcode]['provider'])
+    print('~'*40)
 
-    # if modelname in aimodels:
-    if modelname in maxtokens:
-        # aimodel = decodeModel(modelname)
-        aimodel = modelname
+    chatmodel = eval(modelsobj[modelcode]['provider'])
 
-        if modelname == "claude-3-opus-20240229":
-            chatmodel = ChatAnthropic(temperature=temperature,model_name=aimodel)
-        elif modelname == "open-mixtral-8x7b":
-            aimodel = "accounts/fireworks/models/mixtral-8x7b-instruct"
-            # chatmodel = ChatMistralAI(temperature=temperature,model_name=aimodel)
-            chatmodel = ChatFireworks(temperature=1,model=aimodel)
-        elif modelname == "llama-v3-70b-instruct":
-            aimodel = "accounts/fireworks/models/llama-v3-70b-instruct"
-            chatmodel = ChatFireworks(temperature=temperature,model=aimodel)
-        elif modelname == "gemini-1.0-pro":
-            googlesafety = {
-                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE
-            }
-            chatmodel = ChatGoogleGenerativeAI(temperature=temperature,model=aimodel,convert_system_message_to_human=True,safety_settings=googlesafety)
-        else:
-            chatmodel = ChatOpenAI(temperature=temperature,model_name=aimodel)
+    # # if modelname in aimodels:
+    # if modelname in maxtokens:
+    #     # aimodel = decodeModel(modelname)
+    #     aimodel = modelname
+
+    #     if modelname == "claude-3-opus-20240229":
+    #         chatmodel = ChatAnthropic(temperature=temperature,model_name=aimodel)
+    #     elif modelname == "open-mixtral-8x7b":
+    #         aimodel = "accounts/fireworks/models/mixtral-8x7b-instruct"
+    #         # chatmodel = ChatMistralAI(temperature=temperature,model_name=aimodel)
+    #         chatmodel = ChatFireworks(temperature=1,model=aimodel)
+    #     elif modelname == "llama-v3-70b-instruct":
+    #         aimodel = "accounts/fireworks/models/llama-v3-70b-instruct"
+    #         chatmodel = ChatFireworks(temperature=temperature,model=aimodel)
+    #     elif modelname == "gemini-1.0-pro":
+    #         googlesafety = {
+    #             HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+    #             HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+    #             HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+    #             HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE
+    #         }
+    #         chatmodel = ChatGoogleGenerativeAI(temperature=temperature,model=aimodel,convert_system_message_to_human=True,safety_settings=googlesafety)
+    #     else:
+    #         chatstring = f'ChatOpenAI(temperature={temperature},model_name="{aimodel}")'
+    #         chatmodel = eval(chatstring)
+    #         # chatmodel = ChatOpenAI(temperature=temperature,model_name=aimodel)
+
 
     return chatmodel
 
 ###############################################################################
-def onelang(uid,intxt,persona="default",model=credentials.aimodel):
+def onelang(uid,intxt,persona="default",model=credentials.aimodel,modelcode="gpt35t"):
     global oai
 
     chatty  = getchatty()
@@ -570,7 +621,7 @@ def onelang(uid,intxt,persona="default",model=credentials.aimodel):
     # print(msgarr)
 
 
-    response,msgarr = dochat(msgarr,model)    #.encode(encoding='ASCII',errors='ignore').decode()
+    response,msgarr = dochat(msgarr,model,modelcode)    #.encode(encoding='ASCII',errors='ignore').decode()
 
     # choice = response.choices[0]
     # restxt = choice.message.content
@@ -789,37 +840,12 @@ def scrapeWebPage(url):
     return allText
 
 
+
 ###############################################################################
-def main():
-    uid = "U07005"
-    # drugjson = loadJson('pauth.json')
-    drugjson = loadPickle('pauth.pkl')
-
-    chatresp = onechat(uid,"start a new authorization",drugjson)  
-    print(chatresp)
-
-    chatresp = onechat(uid,"Ozempic",drugjson)    
-    print(chatresp)
-
-    chatresp = onechat(uid,"Horizon Blue Cross Medicare",drugjson)    
-    print(chatresp)
-
-    if ("DRUGNAME:" in chatresp) and ("FORMNAME:" in chatresp):
-        print("Processing for info sheet")
-        infourl = getMatchedInfo(chatresp,drugjson)
-        print(infourl)
-
-
-
-    appdb.resetUserData(uid)
-
-
+refreshModels()
 
 
 ###############################################################################
 if __name__ == '__main__':
 
-    restart = True
-    
-    while restart:
-        restart = main()
+    print("this is a support module")

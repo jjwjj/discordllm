@@ -263,7 +263,7 @@ def extractScopeAndPersona(message):
 
         
 
-    return scopeValue, personaValue, modelValue
+    return scopeValue, personaValue, modelValue, modelCode
 
 
 
@@ -481,7 +481,7 @@ async def on_message(message):
     focustxt = ""
     persona  = "default"
     
-    focustxt,persona,aimodel = extractScopeAndPersona(message)
+    focustxt,persona,aimodel,modelcode = extractScopeAndPersona(message)
     # print(aimodel,str(message.channel.topic))
 
     textattach = ""
@@ -785,7 +785,9 @@ async def on_message(message):
             return
         
         elif usrtext.startswith('!models'):
+
             if islang:
+                langchat.refreshModels()
                 msg = langchat.listModels()
             else:
                 msg  = appchat.listModels()
@@ -883,7 +885,7 @@ async def on_message(message):
                 print(f'>>>>>>>>>> isfaiss: prompt={prompt}')
                 msg = await getPromptResponse(executor, langchat.onefaiss, threadseed, prompt, persona, aimodel)        
             elif islang:
-                msg = await getPromptResponse(executor, langchat.onelang, threadseed, prompt, persona, aimodel)
+                msg = await getPromptResponse(executor, langchat.onelang, threadseed, prompt, persona, aimodel, modelcode)
             else:
                 msg = await getPromptResponse(executor, appchat.onechat, threadseed, prompt, persona, aimodel)        
         

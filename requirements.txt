@@ -15,3 +15,4 @@ langchain-google-genai
 langchain-mistralai
 langchain-anthropic
 langchain-fireworks
+langchain-groq
