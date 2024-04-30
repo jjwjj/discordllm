@@ -113,6 +113,7 @@ matchcommandsysrole = """
     !image    = create an image from the string that follows the request for image search
     !embed    = does the content contiain an embedded or attached file
     !url      = does the content contain a URL? meaning it starts with http:// or https://
+    !barada   = klaatu barada nikto
 
     If the user's input does not equate to any of the predefined commands, you should return a value of 'no match'
     Only return the specific name of the command including the ! character. 

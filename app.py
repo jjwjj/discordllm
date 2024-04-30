@@ -256,7 +256,7 @@ def extractScopeAndPersona(message):
     # Extracting values using the regular expression search results
     scopeValue = scopeMatch.group(1) if scopeMatch else None
     personaValue = personaMatch.group(1) if personaMatch else "default"
-    modelCode = modelMatch.group(1) if modelMatch else None
+    modelCode = modelMatch.group(1) if modelMatch else credentials.defaultmodel
 
     
     modelValue = langchat.decodeModel(modelCode)
@@ -729,12 +729,54 @@ async def on_message(message):
 
             await typingSend(message,msg)
             return
+        
+        elif usrtext.startswith('!barada') :
+            if str(message.author.id) == str(credentials.ownerid):
+                # magicword = "Anál nathrach, orth’ bháis’s bethad, do chél dénmha."
+                magicword = "Klaatu Barada Nikto"
+                wordindex = 0
+                msg = f"{magicword[wordindex]}"
+                wordindex += 1
+                await typingSend(message,msg)
+
+                chnl = client.get_channel(credentials.savechannel)
+
+                allmessages = []  # Initialize an empty list to store messages
+                async for onemessage in chnl.history(limit=None):  # Fetch all messages in the channel
+                # async for onemessage in message.channel.history(limit=None):  # Fetch all messages in the channel
+                    allmessages.append(onemessage)
+
+                allmessages.reverse()  # Reverse the list to make the most recent messages last
+
+                heartbeat = 0
+                # with open(f'{message.channel.id}_history.txt', 'w') as file:
+                with open(f'{chnl.id}_history.txt', 'w') as file:
+                    
+                    for onemessage in allmessages:
+                        file.write(f"{onemessage.author}: {onemessage.content}\n")
+                        time.sleep(0.25)  # Introduce a 0.25-second delay between each message
+                        heartbeat += 1
+
+                        if heartbeat % 30 == 0:
+                            # msg = f"Processing {heartbeat} of {len(allmessages)}"
+                            msg = f"{magicword[wordindex]}"
+                            wordindex += 1
+                            if wordindex >= len(magicword):
+                                wordindex = 0
+                            await typingSend(message,msg)
+
+                msg = "All Done"
+            else:
+                msg = "My potions are too strong for you, traveler."
+
+            await typingSend(message,msg)
+            return
 
         elif usrtext.startswith('!info'):
             channel_id = str(message.channel.id)
             guild_id = str(message.guild.id)
 
-            msg = f'{userid} {channel_id} {guild_id} {prompt} '
+            msg = f'userid={userid}/{client.user.id}/{message.author.id} channel_id={channel_id} guild_id={guild_id} prompt={prompt} '
 
 
             await typingSend(message,msg)
