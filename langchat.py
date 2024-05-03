@@ -172,6 +172,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt
         "claude-3-opus-20240229",
         "open-mixtral-8x7b",
         "gemini-1.0-pro",
+        "gemini-1.5-pro-latest",
         "llama-v3-70b-instruct"
         }:
         tokens_per_message = 3
