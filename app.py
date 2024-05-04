@@ -398,7 +398,7 @@ async def on_message(message):
     say = send_long_message
     isfaiss = False
     islang  = True
-    usebot = False
+    usebot = credentials.usebot
 
 
 
