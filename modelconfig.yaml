@@ -40,11 +40,11 @@ llamafw:
   active: 1
 mixtral:
   model: open-mixtral-8x7b
-  maxtokens: 4096
+  maxtokens: 6114
   provider: "ChatGroq(temperature=0, model_name='mixtral-8x7b-32768')"
   active: 1
 llama3:
   model: llama-v3-70b-instruct
-  maxtokens: 4096
+  maxtokens: 6144
   provider: "ChatGroq(temperature=0, model='llama3-70b-8192')"
   active: 1
