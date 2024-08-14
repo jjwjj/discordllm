@@ -114,6 +114,7 @@ matchcommandsysrole = """
     !embed    = does the content contiain an embedded or attached file
     !url      = does the content contain a URL? meaning it starts with http:// or https://
     !barada   = klaatu barada nikto
+    !rage     = use retrieval augmented generation to respond to the user's input
 
     If the user's input does not equate to any of the predefined commands, you should return a value of 'no match'
     Only return the specific name of the command including the ! character. 
@@ -161,7 +162,7 @@ def getCommand(usrmsg):
 ###############################################################################
 def preProcessCommand(command,rawmsg):
 
-    moreinfo = ["!topic","!image","!news","!web","!embed","!url"]
+    moreinfo = ["!topic","!image","!news","!web","!embed","!url","!rag"]
 
     if command.startswith("!"):
         if command in moreinfo:

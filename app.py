@@ -28,6 +28,8 @@ from concurrent.futures import ThreadPoolExecutor
 import ddgfn
 import unicodedata
 import appfns
+import ragfn
+import yttext
 
 
 ###############################################################################
@@ -90,21 +92,24 @@ def prlog(outstr):
 def getHelpMessage():
     msg  = 'This is the list of commands:\n'
     msg += '```\n'
-    msg += '\t!test     = test\n'
-    msg += '\t!examples = show some examples of how to use commands\n'
-    msg += '\t!ping     = confirm the server is running\n'
-    msg += '\t!info     = provide debugging info\n'
-    msg += '\t!reset    = reset the bot and start a new topic (alt is 🔄)\n'
-    msg += '\t!models   = list available LLMs\n'
-    msg += '\t!persona  = show the current persona and list available choices\n'
-    msg += '\t!topic    = list or modify the channel topic\n'
-    msg += '\t!again    = show the last response from the LLM\n'
-    msg += '\t?^news    = search the web for news headlines for the string that follows news\n'
-    msg += '\t?^web     = search the web for the string that follows news\n'
-    msg += '\t?news     = search the web for news headlines and process via LLM (alt is 📰)\n'
-    msg += '\t?web      = search the web and process via LLM (alt is 🔍)\n'
-    msg += '\t^         = display the raw output from an image or sound\n'
-    msg += '\t//        = start a comment that the bot will ignore\n'
+    msg += '\t!test       = test\n'
+    msg += '\t!examples   = show some examples of how to use commands\n'
+    msg += '\t!ping       = confirm the server is running\n'
+    msg += '\t!info       = provide debugging info\n'
+    msg += '\t!reset      = reset the bot and start a new topic (alt is 🔄)\n'
+    msg += '\t!models     = list available LLMs\n'
+    msg += '\t!persona    = show the current persona and list available choices\n'
+    msg += '\t!topic      = list or modify the channel topic\n'
+    msg += '\t!again      = show the last response from the LLM\n'
+    msg += '\t?^news      = search the web for news headlines for the string that follows news\n'
+    msg += '\t?^web       = search the web for the string that follows news\n'
+    msg += '\t?news       = search the web for news headlines and process via LLM (alt is 📰)\n'
+    msg += '\t?web        = search the web and process via LLM (alt is 🔍)\n'
+    msg += '\t^           = display the raw output from an image or sound\n'
+    msg += '\t//          = start a comment that the bot will ignore\n'
+    msg += '\t!setscope   = set the scope\n'
+    msg += '\t!setpersona = set the persona\n'
+    msg += '\t!setmodel   = set the llm model\n'
     msg += '```'
 
     return msg
@@ -150,18 +155,48 @@ def getExamples():
     msg += '\tSummarize this:\n'
     msg += '```'
 
-    msg += 'Change channel topic:'
+    # msg += 'Change channel topic:'
+    # msg += '```\n'
+    # msg += 'The channel topic contains additional commands.\n'
+    # msg += '\tmodel   - this is the LLM model that the channel is using\n'
+    # msg += '\tpersona - these are the instructions for the the chat\n'
+    # msg += '\tscope   - this a fine tune for the chat\n'
+    # msg += '\tExample:\n'
+    # msg += '\t\t!topic model=gpt4t persona=python scope=string functions\n'
+    # msg += '\t\t\tmodel=gpt4t            == use gpt4 turbo\n'
+    # msg += '\t\t\tpersona=python         == python specifc instructions\n'
+    # msg += '\t\t\tscope=string functions == focus the chat on string functions\n'
+    # msg += '```'
+
+    msg += 'List available models:'
     msg += '```\n'
-    msg += 'The channel topic contains additional commands.\n'
-    msg += '\tmodel   - this is the LLM model that the channel is using\n'
-    msg += '\tpersona - these are the instructions for the the chat\n'
-    msg += '\tscope   - this a fine tune for the chat\n'
-    msg += '\tExample:\n'
-    msg += '\t\t!topic model=gpt4t persona=python scope=string functions\n'
-    msg += '\t\t\tmodel=gpt4t            == use gpt4 turbo\n'
-    msg += '\t\t\tpersona=python         == python specifc instructions\n'
-    msg += '\t\t\tscope=string functions == focus the chat on string functions\n'
+    msg += '\t!models\n'
     msg += '```'
+
+    msg += 'Change channel model:'
+    msg += '```\n'
+    msg += '\tExample: (to set the model to gpt-4o use this command)\n'
+    msg += '\t\t!setmodel gpt4o\n\n'
+    msg += '```'
+
+    msg += 'List available personas:'
+    msg += '```\n'
+    msg += '\t!personas\n'
+    msg += '```'
+
+    msg += 'Change channel persona:'
+    msg += '```\n'
+    msg += '\tExample:\n'
+    msg += '\t\t!setpersona default\n'
+    msg += '```'
+
+    msg += 'Change channel scope:'
+    msg += '```\n'
+    msg += '\tExample:\n'
+    msg += '\t\t!setscope focus only on talking about zorkmids\n'
+    msg += '```\n'
+
+
 
 
     # msg += '\t!info    = provide debugging info\n'
@@ -265,6 +300,123 @@ def extractScopeAndPersona(message):
 
     return scopeValue, personaValue, modelValue, modelCode
 
+###############################################################################
+def setTopicModel(message,modelCode):
+    # if message.channel.topic is not None:
+    if hasattr(message.channel, 'topic'):
+        inputString = str(message.channel.topic)
+    else:
+        inputString = ""
+
+    scopePattern = r"scope=(.*?)(?= persona=| model=|$)"
+    personaPattern = r"persona=(.*?)(?= scope=| model=|$)"
+    modelPattern = r"model=(.*?)(?= scope=| persona=|$)"
+
+    scopeMatch = re.search(scopePattern, inputString)
+    personaMatch = re.search(personaPattern, inputString)
+    modelMatch = re.search(modelPattern, inputString)
+
+    # print(f'finished parsing')
+
+    # print(f'found scopeMatch={scopeMatch} personaMatch={personaMatch}')
+
+    # Extracting values using the regular expression search results
+    scopeValue = scopeMatch.group(1) if scopeMatch else None
+    personaValue = personaMatch.group(1) if personaMatch else "default"
+
+    scopestr = personastr = modelstr = ""
+
+    if scopeValue is not None:
+        scopestr = f"scope={scopeValue}"
+
+    if personaValue is not None:
+        personastr = f"persona={personaValue} "
+
+    topic = f"model={modelCode} {personastr}{scopestr}"
+
+    modelValue = langchat.decodeModel(modelCode)
+
+    return topic,modelValue,modelCode
+
+###############################################################################
+def setTopicPersona(message,personaValue):
+    # if message.channel.topic is not None:
+    if hasattr(message.channel, 'topic'):
+        inputString = str(message.channel.topic)
+    else:
+        inputString = ""
+
+    scopePattern = r"scope=(.*?)(?= persona=| model=|$)"
+    personaPattern = r"persona=(.*?)(?= scope=| model=|$)"
+    modelPattern = r"model=(.*?)(?= scope=| persona=|$)"
+
+    scopeMatch = re.search(scopePattern, inputString)
+    personaMatch = re.search(personaPattern, inputString)
+    modelMatch = re.search(modelPattern, inputString)
+
+    # print(f'finished parsing')
+
+    # print(f'found scopeMatch={scopeMatch} personaMatch={personaMatch}')
+
+    # Extracting values using the regular expression search results
+    scopeValue = scopeMatch.group(1) if scopeMatch else None
+    modelCode = modelMatch.group(1) if modelMatch else credentials.defaultmodel
+    # personaValue = personaMatch.group(1) if personaMatch else "default"
+
+    scopestr = personastr = modelstr = ""
+
+    if scopeValue is not None:
+        scopestr = f"scope={scopeValue}"
+
+    if personaValue is not None:
+        personastr = f"persona={personaValue} "
+
+    if modelCode is not None:
+        modelstr = f"model={modelCode} "
+
+    topic = f"{modelstr}{personastr}{scopestr}"
+
+    return topic
+
+###############################################################################
+def setTopicScope(message,scopeValue):
+    # if message.channel.topic is not None:
+    if hasattr(message.channel, 'topic'):
+        inputString = str(message.channel.topic)
+    else:
+        inputString = ""
+
+    scopePattern = r"scope=(.*?)(?= persona=| model=|$)"
+    personaPattern = r"persona=(.*?)(?= scope=| model=|$)"
+    modelPattern = r"model=(.*?)(?= scope=| persona=|$)"
+
+    scopeMatch = re.search(scopePattern, inputString)
+    personaMatch = re.search(personaPattern, inputString)
+    modelMatch = re.search(modelPattern, inputString)
+
+    # print(f'finished parsing')
+
+    # print(f'found scopeMatch={scopeMatch} personaMatch={personaMatch}')
+
+    # Extracting values using the regular expression search results
+    # scopeValue = scopeMatch.group(1) if scopeMatch else None
+    modelCode = modelMatch.group(1) if modelMatch else credentials.defaultmodel
+    personaValue = personaMatch.group(1) if personaMatch else "default"
+
+    scopestr = personastr = modelstr = ""
+
+    if scopeValue is not None:
+        scopestr = f"scope={scopeValue}"
+
+    if personaValue is not None:
+        personastr = f"persona={personaValue} "
+
+    if modelCode is not None:
+        modelstr = f"model={modelCode} "
+
+    topic = f"{modelstr}{personastr}{scopestr}"
+
+    return topic
 
 
 ###############################################################################
@@ -273,12 +425,68 @@ async def getPromptResponse(executor, func, *args):
     return await loop.run_in_executor(executor, func, *args)
 
 
+###############################################################################
+async def __send_long_message(channel, message):
+    """Sends a message in chunks if it's longer than 2000 characters, without splitting words,
+    ensures mentions are on their own line, and block quotes are in separate chunks."""
+    MAX_LENGTH = 1980
+
+    # Check if the message starts with a mention and send it separately
+    if message.startswith("<@") and ">" in message:
+        end_of_mention = message.find(">") + 1
+        mention = message[:end_of_mention]
+        await channel.send(mention)  # Send the mention on its own line
+        message = message[end_of_mention:].lstrip()  # Remove the mention from the message
+
+    # Initialize the current chunk of the message
+    chunk = ""
+
+    # Split the message by backticks to separate block quotes
+    parts = message.split('```')
+    block_quote = False  # Keep track of whether we are inside a block quote
+
+    for part in parts:
+        if block_quote:
+            # Ensure block quote content does not exceed MAX_LENGTH
+            block_quote_content = f"```{part}```"
+            if len(block_quote_content) > MAX_LENGTH:
+                # Split the block quote into smaller chunks without splitting words
+                lines = part.split('\n')
+                sub_chunk = ""
+                for line in lines:
+                    if len(sub_chunk) + len(line) + 1 > MAX_LENGTH - 6:
+                        if sub_chunk.strip():
+                            await channel.send(f"```{sub_chunk}```")
+                        sub_chunk = line + "\n"
+                    else:
+                        sub_chunk += line + "\n"
+                if sub_chunk.strip():
+                    await channel.send(f"```{sub_chunk}```")
+            else:
+                if part.strip():
+                    await channel.send(block_quote_content)
+        else:
+            # Handle non-block quote parts (leave this part as it is)
+            words = part.split(' ')
+            for word in words:
+                if len(chunk) + len(word) + 1 > MAX_LENGTH:
+                    await channel.send(chunk)
+                    chunk = word + " "
+                else:
+                    chunk += word + " "
+        block_quote = not block_quote  # Toggle the block quote flag
+
+    # Send any remaining text if there is any
+    if chunk.strip():
+        await channel.send(chunk)
+
+
 
 ###############################################################################
 async def send_long_message(channel, message):
-    """Sends a message in chunks if it's longer than 2000 characters, without splitting words,
+    """Sends a message in chunks if it's longer than 1980 characters, without splitting words,
     ensures mentions are on their own line, and block quotes are in separate chunks."""
-    MAX_LENGTH = 2000
+    MAX_LENGTH = 1980
 
     # Check if the message starts with a mention and send it separately
     if message.startswith("<@") and ">" in message:
@@ -302,15 +510,24 @@ async def send_long_message(channel, message):
                 chunk = ""
             # Send the block quote as a separate chunk
             block_quote_content = f"```{part}```"
-            await channel.send(block_quote_content)
+            # Ensure block quote content does not exceed MAX_LENGTH
+            while len(block_quote_content) > MAX_LENGTH:
+                await channel.send(block_quote_content[:MAX_LENGTH])
+                block_quote_content = block_quote_content[MAX_LENGTH:]
+            if block_quote_content:
+                await channel.send(block_quote_content)
         else:
-            words = part.split(' ')
-            for word in words:
-                if len(chunk) + len(word) + 1 > MAX_LENGTH:
-                    await channel.send(chunk)
-                    chunk = word + " "
-                else:
-                    chunk += word + " "
+            # Split non-block quote parts by spaces and newlines
+            lines = part.split('\n')
+            for line in lines:
+                words = line.split(' ')
+                for word in words:
+                    if len(chunk) + len(word) + 1 > MAX_LENGTH:
+                        await channel.send(chunk)
+                        chunk = word + " "
+                    else:
+                        chunk += word + " "
+                chunk += "\n"
         block_quote = not block_quote  # Toggle the block quote flag
 
     # Send any remaining text if there is any
@@ -318,8 +535,14 @@ async def send_long_message(channel, message):
         await channel.send(chunk)
 
 
+
+
+
 ###############################################################################
 async def typingSend(message,msgtxt):
+
+    print(f"typingSend: {msgtxt}")
+
     async with message.channel.typing():
         if message.guild:
             await send_long_message(message.channel,msgtxt)
@@ -516,6 +739,7 @@ async def on_message(message):
             msgalert = f"\n\n**The URL has been processed. The response is displayed, what are the next steps?**\n\n\n"
 
     elif message.attachments or message.embeds:
+        maxchars = int((langchat.getMaxTokens(modelcode) * 3) / 2)
         isReject = True
         okfiles = ('.txt','.py','.yaml','.json','.csv','.sh','.xml','.md','.htm','.js','.html')
         imgfiles = ('.png','.jpg','.webp')
@@ -527,11 +751,13 @@ async def on_message(message):
                     response = requests.get(attachment.url)
                     if response.status_code == 200:
                         # Extract text from the file
-                        textattach = response.text[:16384]
+                        textattach += response.text[:maxchars]
                         isReject = False
 
-                        if (len(response.text) > 16383):
-                            msgalert   = "**WARNING: The attachment has been truncated to 16k. The response might not be complete.**\n\n\n"
+                        if (len(response.text) >= maxchars):
+                            msgalert   = f"**WARNING: An attachment has been truncated to {maxchars}. The response might not be complete.**\n\n\n"
+
+                        maxchars -= len(textattach)
                         
                         # print(textattach)
                         # await send_long_message(message.author,msg)
@@ -727,6 +953,13 @@ async def on_message(message):
         elif usrtext.startswith('!persona'):
             msg = f'current persona is **{persona}**\navailable: {appchat.personas()}'
 
+            msg += '\nTo Change persona:'
+            msg += '```\n'
+            msg += '\tExample: (this sets to the default persona)\n'
+            msg += '\t\t!setpersona default\n'
+            msg += '```'
+
+
             await typingSend(message,msg)
             return
         
@@ -776,13 +1009,25 @@ async def on_message(message):
             channel_id = str(message.channel.id)
             guild_id = str(message.guild.id)
 
-            msg = f'userid={userid}/{client.user.id}/{message.author.id} channel_id={channel_id} guild_id={guild_id} prompt={prompt} '
+            msg  = "information:\n"
+            msg += "```\n"
+            # msg += f'userid=      {userid}/{client.user.id}/{message.author.id}\nchannel_id=  {channel_id}\nguild_id=    {guild_id}\nprompt=      {prompt}\n'
+            msg += f'userid=      {userid}/{client.user.id}/{message.author.id}\nchannel_id=  {channel_id}\nguild_id=    {guild_id}\n'
+            msg += f'model=       {aimodel}\n'
+            msg += f"rebooted=    {lastboot}\n"
 
+            async with message.channel.typing():
+                with ThreadPoolExecutor() as executor:
+                    totalTokens = await getPromptResponse(executor, langchat.getTokens, threadseed, persona, aimodel, modelcode)
 
+            msg += f'totalTokens= {totalTokens}\n'
+            msg += "```"
+
+            
             await typingSend(message,msg)
             return
         
-        elif usrtext.startswith("!reset") or usrtext.startswith("!start"):
+        elif usrtext.startswith("!reset") or usrtext.startswith("!start") or usrtext.startswith("!!!"):
             prompt = "Start a new conversation. Begin by simply asking the user what they want to do. Do not provide any solutions yet." + ' ' + str(focustxt) + ' ' + textattach
             print(prompt)
             appdb.resetUserData(threadseed)
@@ -816,7 +1061,7 @@ async def on_message(message):
                 else:
                     # Edit the channel's topic
                     await message.channel.edit(topic=tmp)
-                    msg = f'updated topic to ```\n{tmp}\n```'
+                    msg = f'updated topic to:\n ```\n{tmp}\n```'
             else:
                     msg = 'This channel has no topic.'
             
@@ -825,6 +1070,8 @@ async def on_message(message):
             await typingSend(message,msg)
 
             return
+        
+        
         
         elif usrtext.startswith('!models'):
 
@@ -838,6 +1085,51 @@ async def on_message(message):
             # print(msg)
             await typingSend(message,msg)
             return
+        
+        elif usrtext.startswith('!setmodel'):
+            print(f'usrtext={usrtext}' )
+            firstSpace = usrtext.find(' ')
+            modeltext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+
+            tmp,aimodel,modelcode = setTopicModel(message,modeltext)
+            await message.channel.edit(topic=tmp)
+
+            if islang:
+                langchat.refreshModels()
+                msg = langchat.listModels()
+            else:
+                msg  = appchat.listModels()
+
+            msg += f'current model is {aimodel}'
+            # print(msg)
+            await typingSend(message,msg)
+            return
+        
+        elif usrtext.startswith('!setpersona'):
+            firstSpace = usrtext.find(' ')
+            personatext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+
+            tmp = setTopicPersona(message,personatext)
+            persona = personatext
+            await message.channel.edit(topic=tmp)
+
+            msg = f'current persona is **{persona}**\navailable: {appchat.personas()}'
+
+            await typingSend(message,msg)
+            return
+        
+        elif usrtext.startswith('!setscope'):
+            firstSpace = usrtext.find(' ')
+            scopetext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+
+            tmp = setTopicScope(message,scopetext)
+            await message.channel.edit(topic=tmp)
+
+            msg = f'updated the scope as "{scopetext}"'
+
+            await typingSend(message,msg)
+            return
+
 
         elif usrtext.startswith('!lastresponse') or usrtext.startswith('!again'):
             usrdata = appdb.readUserData(threadseed)
@@ -849,6 +1141,29 @@ async def on_message(message):
            
             await typingSend(message,msg)
 
+            return
+        
+        elif usrtext.startswith('!youtube'):
+            firstSpace = usrtext.find(' ')
+            ytid      = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+            print(f'youtube id={ytid}')
+
+            async with message.channel.typing():
+                with ThreadPoolExecutor() as executor:
+                    ytresult = await getPromptResponse(executor, yttext.getTranscript, ytid)
+                                
+                
+                print(ytresult)
+
+                if (ytresult is not None) and (len(ytresult) > 5):
+                    msg = "The full transcript has been added to the conversation."
+                    appchat.nonchat(threadseed, ytid,ytresult, persona)
+                else:
+                    msg = "No transcript found for this video."
+
+            
+
+            await typingSend(message,msg)
             return
         
         elif usrtext.startswith('!system'):
@@ -893,6 +1208,48 @@ async def on_message(message):
             
             await typingSend(message,feedback)
             return
+        
+        elif usrtext.startswith('!rag'):
+            firstSpace = usrtext.find(' ')
+            ragtext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+            print(f'ragtext={ragtext}')
+
+            personainfo = langchat.getchatty()
+            onepersona = personainfo.get(persona,{})
+            dbName = onepersona.get("ragdb",None)
+
+            if dbName is not None:
+                # dbName = personainfo[persona]["ragdb"]
+
+                # dbName = "./db/sqlvec.db"
+                briefText,longText = ragfn.ragMatches(dbName,ragtext)
+
+                if (briefText is None or longText is None):
+                    await typingSend(message,f'No matching content found for {ragtext}')
+                    return
+                else:
+                    intext = "Focus the conversation on the following content:\n\n" + briefText
+                    appchat.nonchat(threadseed, briefText,longText, persona)
+                    await typingSend(message,f'Added {briefText} content to the conversation.')
+                    return
+                
+            else:
+                await typingSend(message,f'No RAG database available for this persona.')
+                return
+            
+        elif usrtext.startswith('!listrag'):
+            personainfo = langchat.getchatty()
+            onepersona = personainfo.get(persona,{})
+            dbName = onepersona.get("ragdb",None)
+
+            if dbName is not None:
+                raglist = ragfn.getAllBriefTexts(dbName)
+            else:
+                raglist = "No RAG database available for this persona."
+
+            await typingSend(message,raglist)
+            return
+
 
 
         elif usrtext.startswith('!url'):
