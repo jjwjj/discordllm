@@ -621,7 +621,8 @@ def readAndProcessBinary(url,fname):
 def processImageVision(url,usrtext):
 
     response = oai.chat.completions.create(
-        model="gpt-4-vision-preview",
+        # model="gpt-4-vision-preview",
+        model="gpt-4o",
         messages=[
             {
             "role": "user",
@@ -637,7 +638,7 @@ def processImageVision(url,usrtext):
             ],
             }
         ],
-        max_tokens=300,
+        max_tokens=700,
     )
 
     # print(response.choices[0])

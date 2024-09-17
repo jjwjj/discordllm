@@ -25,6 +25,7 @@ from langchain_anthropic                  import ChatAnthropic
 from langchain_google_genai               import ChatGoogleGenerativeAI,HarmBlockThreshold,HarmCategory
 from langchain_mistralai.chat_models      import ChatMistralAI
 from langchain_fireworks                  import ChatFireworks
+from langchain_huggingface                import ChatHuggingFace,HuggingFaceEndpoint
 from langchain_groq                       import ChatGroq
 
 ###############################################################################
@@ -148,7 +149,7 @@ def getlines():
 
 
 ###############################################################################
-def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt4t"):
+def num_tokens_from_messages(messages, model="gpt4t",modelcode="gpt4o"):
     """Return the number of tokens used by a list of messages."""
 
     
@@ -171,10 +172,15 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt
         "gpt-4-turbo-preview",
         "gpt-4-turbo",
         "claude-3-opus-20240229",
+        "claude-3-5-sonnet-20240620",
         "open-mixtral-8x7b",
         "gemini-1.0-pro",
         "gemini-1.5-pro-latest",
-        "llama-v3-70b-instruct"
+        "llama-v3-70b-instruct",
+        "llama-v3p1-70b-instruct",
+        "llama-v3p1-405b-instruct",
+        "gpt-4o",
+        'mixtral-8x22b'
         }:
         tokens_per_message = 3
         tokens_per_name = 1
@@ -188,9 +194,10 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt
         # print("Warning: gpt-4 may update over time. Returning num tokens assuming gpt-4-0613.")
         return num_tokens_from_messages(messages, model="gpt-4-0613")
     else:
-        raise NotImplementedError(
-            f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
-        )
+        return num_tokens_from_messages(messages, model="gpt-4o")
+        # raise NotImplementedError(
+        #     f"""num_tokens_from_messages() is not implemented for model {model}. See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens."""
+        # )
     num_tokens = 0
     for message in messages:
         num_tokens += tokens_per_message
@@ -201,6 +208,44 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613",modelcode="gpt
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
 
+
+###############################################################################
+def getMaxTokens(modelcode):
+    return int(modelsobj[modelcode]['maxtokens'])
+
+
+###############################################################################
+def getTokens(uid,persona,gptmodel,modelcode):
+
+    chatty  = getchatty()
+
+    if persona not in chatty:
+        persona = "default"
+
+    sysreq = chatty[persona]["sys"]
+
+    usrdata = appdb.readUserData(uid)
+
+    if usrdata:
+        print('we have data')
+        if "MsgArray" in usrdata:
+            msgarr = usrdata["MsgArray"]
+            # print(msgarr[0])
+            if msgarr is not None and len(msgarr) > 0 and msgarr[0] is not None:
+                msgarr[0]['content'] = sysreq
+            # print(msgarr[0])
+        else:
+            msgarr = newmsgarr(uid,sysreq)
+    else:
+        print('no data, restarting')
+        msgarr = newmsgarr(uid,sysreq)
+
+    if msgarr is None:
+        msgarr = newmsgarr(uid,sysreq)
+
+    tokencount = num_tokens_from_messages(msgarr,gptmodel,modelcode)
+
+    return f"{tokencount} / {int(modelsobj[modelcode]['maxtokens'])}"
 
 
 ###############################################################################
@@ -232,7 +277,8 @@ def dochat(messagearray,gptmodel,modelcode):
     tokencount = num_tokens_from_messages(messagearray,gptmodel,modelcode)
 
     while tokencount > poptokens:
-        messagearray.pop(1)
+        messagearray.pop(3)
+        messagearray.pop(3) # remove the first two messages after the first message, the user and the assistant
         tokencount = num_tokens_from_messages(messagearray,gptmodel,modelcode)
 
     print('#########################',tokencount,'#########################')
@@ -251,7 +297,8 @@ def dochat(messagearray,gptmodel,modelcode):
             tryagain = False
         except Exception as err:
             if (str(err).find('maximum context length') > -1):
-                messagearray.pop(1)
+                messagearray.pop(3)
+                messagearray.pop(3) # remove the first two messages, the user and the assistant
             else:
                 tryagain = False
                 print(err)
@@ -492,10 +539,18 @@ def personas():
 def listModels():
 
     modellist = "These are the available models:\n```\n"
+    modellist += f'\t{"Model Code":12} : {"Model Explaination"}\n'
     for mm in aimodels:
-        modellist += f'\t{mm:7} : {aimodels[mm]}\n'
-    
+        modellist += f'\t{mm:12} : {aimodels[mm]}\n'
+
     modellist += "```"
+
+    modellist += 'To change the model:'
+    modellist += '```\n'
+    modellist += '\tExample: (to set the model to gpt-4o use this command)\n'
+    modellist += '\t\t!setmodel gpt4o\n\n'
+    modellist += '```'
+
 
     # print(f'listModels: {modellist}')
 
@@ -612,7 +667,11 @@ def onelang(uid,intxt,persona="default",model=credentials.aimodel,modelcode="gpt
 
 
     usrreq = f'{params}{usrtxt}{intxt}{endtxt}'
-    # print(usrreq)
+    print(f'onelang prompt={usrreq}')
+    print(f'onelang params={params}')
+    print(f'onelang usrtxt={usrtxt}')
+    print(f'onelang intxt={intxt}')
+    print(f'onelang endtxt={endtxt}')
 
     # usrdata = pauthdb.readUserData(uid)
     # msgarr = usrdata["MsgArray"] if usrdata and "MsgArray" in usrdata else []
@@ -633,7 +692,11 @@ def onelang(uid,intxt,persona="default",model=credentials.aimodel,modelcode="gpt
     # choice = response.choices[0]
     # restxt = choice.message.content
     # tokens = response.usage.total_tokens
-    print(response)
+    # print(response)
+    try:
+        print(response.response_metadata['token_usage'])
+    except:
+        print(response)
 
     restxt = response.content
 
@@ -691,7 +754,58 @@ def nonchat(uid,intxt,restxt,persona="default"):
     appdb.updateUserData(uid,msgarr,promptcount)
 
 
+###############################################################################
+def pinchat(uid,pintxt,persona="default"):
 
+    chatty  = getchatty()
+    # print(chatty)
+
+    if persona not in chatty:
+        persona = "default"
+
+
+    sysreq = chatty[persona]["sys"]
+
+    usrdata = appdb.readUserData(uid)
+
+    ##### how do we know the persona changed?
+    # print(usrdata["MsgArray"][0]['content'])
+    # print(chatty)
+
+    if usrdata:
+        print('we have data')
+        if "MsgArray" in usrdata:
+            msgarr = usrdata["MsgArray"]
+            # print(msgarr[0])
+            if msgarr is not None and len(msgarr) > 0 and msgarr[0] is not None:
+                msgarr[0]['content'] = sysreq
+            # print(msgarr[0])
+        else:
+            msgarr = newmsgarr(uid,sysreq)
+    else:
+        print('no data, restarting')
+        msgarr = newmsgarr(uid,sysreq)
+
+    if msgarr is None:
+        msgarr = newmsgarr(uid,sysreq)
+
+    promptcount = (usrdata["PromptCount"] + 1) if usrdata and "PromptCount" in usrdata else 0
+
+
+    # modify msgarr[1] 
+    # msgarr.append({"role": "user", "content": intxt})
+    # msgarr.append({"role": "assistant", "content":str(restxt)})
+
+    firstusr = msgarr[1]
+    newfirst = firstusr['content'] + "\n" + pintxt
+
+    print(f'newfirst={newfirst}')
+
+    msgarr[1] = {"role": "user", "content": newfirst}
+
+    # print(str(msgarr))
+
+    appdb.updateUserData(uid,msgarr,promptcount)
     
 
 

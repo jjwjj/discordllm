@@ -689,15 +689,17 @@ async def on_message(message):
     # if usrtext.startswith("'") or usrtext.startswith('"') or usrtext.startswith('`'):
     #     usrtext = usrtext[1:]
     # else:
-    if usrtext.startswith("!"):
-        matchedcommand = appfns.matchCommand(usrtext,appfns.matchcommandsysrole)    
-        print(f'matchedcommand={matchedcommand}')
 
-        if (matchedcommand.startswith('!')):
-            matchedtext = appfns.preProcessCommand(matchedcommand,usrtext) #matchedcommand
-            print(f'matchedtext={matchedtext}')
-            # usrtext = matchedtext.replace(matchedcommand,'').strip()
-            print(f'modified usrtext={usrtext}')
+
+    # if usrtext.startswith("!"):
+    #     matchedcommand = appfns.matchCommand(usrtext,appfns.matchcommandsysrole)    
+    #     print(f'matchedcommand={matchedcommand}')
+
+    #     if (matchedcommand.startswith('!')):
+    #         matchedtext = appfns.preProcessCommand(matchedcommand,usrtext) #matchedcommand
+    #         print(f'matchedtext={matchedtext}')
+    #         # usrtext = matchedtext.replace(matchedcommand,'').strip()
+    #         print(f'modified usrtext={usrtext}')
 
 
 
@@ -725,12 +727,12 @@ async def on_message(message):
         # print(urltext)
         async with message.channel.typing():
             with ThreadPoolExecutor() as executor:
-                textattach = await getPromptResponse(executor, appchat.scrapeWebPage, urltext)  
+                textattach = await getPromptResponse(executor, langchat.scrapeWebPage, urltext)  
         
             print(f'extracted the following from {urltext}\n\n{textattach}')
             tmp = usrtext.replace(urltext, textattach)
             usrtext = tmp
-            appchat.nonchat(threadseed, urltext,textattach, persona)
+            langchat.nonchat(threadseed, urltext,textattach, persona)
             textattach = ""
 
             print()
@@ -741,7 +743,7 @@ async def on_message(message):
     elif message.attachments or message.embeds:
         maxchars = int((langchat.getMaxTokens(modelcode) * 3) / 2)
         isReject = True
-        okfiles = ('.txt','.py','.yaml','.json','.csv','.sh','.xml','.md','.htm','.js','.html')
+        okfiles = ('.txt','.py','.yaml','.json','.csv','.sh','.xml','.md','.htm','.js','.html','.ipynb')
         imgfiles = ('.png','.jpg','.webp')
         sndfiles = ('.mp3', '.mp4', '.mpeg', '.mpga', '.m4a','.wav','.webm')
         if message.attachments:
@@ -770,11 +772,11 @@ async def on_message(message):
                         imgtxt = usrtext
                     async with message.channel.typing():
                         with ThreadPoolExecutor() as executor:
-                            textattach = await getPromptResponse(executor, appchat.processImageVision, attachment.url, imgtxt)   
+                            textattach = await getPromptResponse(executor, langchat.processImageVision, attachment.url, imgtxt)   
 
 
                     print(f"Image Description: {textattach}")
-                    appchat.nonchat(threadseed,"this is an image",textattach, persona)
+                    langchat.nonchat(threadseed,"this is an image",textattach, persona)
                     await typingSend(message,textattach)
 
                     # if (usrtext.startswith('^')):
@@ -951,7 +953,7 @@ async def on_message(message):
             return
 
         elif usrtext.startswith('!persona'):
-            msg = f'current persona is **{persona}**\navailable: {appchat.personas()}'
+            msg = f'current persona is **{persona}**\navailable: {langchat.personas()}'
 
             msg += '\nTo Change persona:'
             msg += '```\n'
@@ -1031,6 +1033,14 @@ async def on_message(message):
             prompt = "Start a new conversation. Begin by simply asking the user what they want to do. Do not provide any solutions yet." + ' ' + str(focustxt) + ' ' + textattach
             print(prompt)
             appdb.resetUserData(threadseed)
+
+        elif usrtext.startswith('!??'):
+            # prompt = "Summarize."
+            prompt = "Summarize in 5 words. Then again in 20 words. Then a full summary."
+
+        elif usrtext.startswith('!..'):
+            # prompt = "Summarize."
+            prompt = "Are you sure? Please verify that your answer is correct."
         
         elif usrtext.startswith('!ping'):
             greetings = getGreeting()
@@ -1113,7 +1123,7 @@ async def on_message(message):
             persona = personatext
             await message.channel.edit(topic=tmp)
 
-            msg = f'current persona is **{persona}**\navailable: {appchat.personas()}'
+            msg = f'current persona is **{persona}**\navailable: {langchat.personas()}'
 
             await typingSend(message,msg)
             return
@@ -1157,7 +1167,7 @@ async def on_message(message):
 
                 if (ytresult is not None) and (len(ytresult) > 5):
                     msg = "The full transcript has been added to the conversation."
-                    appchat.nonchat(threadseed, ytid,ytresult, persona)
+                    langchat.nonchat(threadseed, ytid,ytresult, persona)
                 else:
                     msg = "No transcript found for this video."
 
@@ -1186,7 +1196,7 @@ async def on_message(message):
                 with ThreadPoolExecutor() as executor:
                     ddgresult = await getPromptResponse(executor, ddgfn.ddgNews, searchtext)
                                 
-                appchat.nonchat(threadseed, searchtext,ddgresult, persona)
+                langchat.nonchat(threadseed, searchtext,ddgresult, persona)
             
             await typingSend(message,ddgresult)
             return
@@ -1202,7 +1212,7 @@ async def on_message(message):
 
                 ddgresult = ddgfn.ddgText(searchtext)
                 
-                appchat.nonchat(threadseed, searchtext,ddgresult, persona)
+                langchat.nonchat(threadseed, searchtext,ddgresult, persona)
 
                 feedback = f"Result of the search is:\n\n{ddgresult}\n\nWhat are the next steps?"
             
@@ -1229,7 +1239,7 @@ async def on_message(message):
                     return
                 else:
                     intext = "Focus the conversation on the following content:\n\n" + briefText
-                    appchat.nonchat(threadseed, briefText,longText, persona)
+                    langchat.nonchat(threadseed, briefText,longText, persona)
                     await typingSend(message,f'Added {briefText} content to the conversation.')
                     return
                 
@@ -1249,8 +1259,44 @@ async def on_message(message):
 
             await typingSend(message,raglist)
             return
+        
 
 
+        elif usrtext.startswith('!pinlast'):       
+
+            async with message.channel.typing():
+                usrdata = appdb.readUserData(threadseed)
+            
+                # msg = sysreq
+                lastmsg = len(usrdata["MsgArray"])
+                pintext = usrdata["MsgArray"][lastmsg-2]['content']
+
+                print(pintext)
+                    
+                langchat.pinchat(threadseed, pintext, persona)
+                feedback = f"{pintext[0:500]}... has been pinned to the conversation."
+                
+            await typingSend(message,feedback)
+            return
+
+
+        elif usrtext.startswith('!pin'):
+            firstSpace = usrtext.find(' ')
+            pintext = usrtext[firstSpace + 1:].strip() if firstSpace != -1 else ""
+            print(f'pintext={pintext}')
+
+            if pintext == "":
+                await typingSend(message,"Please provide a message to pin.")
+                return
+            else:
+                async with message.channel.typing():
+                   
+                    langchat.pinchat(threadseed, pintext, persona)
+
+                    feedback = f"Text has been pinned to the conversation."
+                
+                await typingSend(message,feedback)
+                return
 
         elif usrtext.startswith('!url'):
             return

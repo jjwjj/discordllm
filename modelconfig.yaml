@@ -18,6 +18,21 @@ gpt4om:
   maxtokens: 128000
   provider: "ChatOpenAI(temperature=0, model_name='gpt-4o-mini')"
   active: 1
+gpt4l:
+  model: chatgpt-4o-latest
+  maxtokens: 128000
+  provider: "ChatOpenAI(temperature=0, model_name='chatgpt-4o-latest')"
+  active: 1
+gpto1:
+  model: o1-preview
+  maxtokens: 128000
+  provider: "ChatOpenAI(temperature=0, model_name='o1-preview')"
+  active: 1
+gpto1m:
+  model: o1-mini
+  maxtokens: 128000
+  provider: "ChatOpenAI(temperature=0, model_name='o1-mini')"
+  active: 1
 gpt35t:
   model: gpt-3.5-turbo
   maxtokens: 16384
@@ -30,7 +45,7 @@ claude:
   active: 1
 claude35:
   model: claude-3-5-sonnet-20240620
-  maxtokens: 19968
+  maxtokens: 200000
   provider: "ChatAnthropic(temperature=0, model_name='claude-3-5-sonnet-20240620')"
   active: 1
 google:
@@ -77,4 +92,14 @@ llama3:
   model: llama-v3-70b-instruct
   maxtokens: 6144
   provider: "ChatGroq(temperature=0, model='llama3-70b-8192')"
+  active: 1
+med42:
+  model: med42
+  maxtokens: 8192
+  provider: "HuggingFaceEndpoint(repo_id='m42-health/Llama3-Med42-70B',task='text-generation',max_new_tokens=512,do_sample=False,repetition_penalty=1.03)"
+  active: 1
+unreal:
+  model: unreal-engine-5-code
+  maxtokens: 8192
+  provider: "HuggingFaceEndpoint(repo_id='AdamCodd/unreal-engine-5-code',task='text-generation',max_new_tokens=512,do_sample=False,repetition_penalty=1.03)"
   active: 1
